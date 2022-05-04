@@ -5,8 +5,13 @@ import pandas as pd
 # env LD_PRELOAD=libjemalloc.so.2 PYTHONPATH=lib python3 -c 'import odgi'
 # export LD_PRELOAD=/lib/x86_64-linux-gnu/libjemalloc.so.2
 
+# Put the path to the .og and .gfa files here:
+# og_path = "Test/test_1.og"
+og_path = "yeast+edits.og"
+gaf_path = "GE00001631-DOT_H11_S191_R2_001.subset.gaf"
+# gaf_path = "Test/test.gaf"
 gr = odgi.graph()
-gr.load("yeast+edits.og")
+gr.load(og_path)
 path_names = []
 node_ids = []
 gr.for_each_path_handle(lambda p: path_names.append(gr.get_path_name(p)))
@@ -55,7 +60,7 @@ def read_gaf(gaf_file_name):
     return nodes
 
 
-gaf_nodes = read_gaf("GE00001631-DOT_H11_S191_R2_001.subset.gaf")
+gaf_nodes = read_gaf(gaf_path)
 
 # The code below names the columns in the gaf file, in case you want to use more than just the nodes that
 # had reads mapped to them.
@@ -224,7 +229,7 @@ def reverse_dict_search(dictionary, value):
 
 
 # testing
-print(f'{hom_path[619]}: {reverse_dict_search(node_dict, hom_path[619])}')
+# print(f'{hom_path[619]}: {reverse_dict_search(node_dict, hom_path[619])}')
 # print(f'{ref_path[1]}: {reverse_dict_search(node_dict, [ref_path[1]])}')
 
 # Next step: write a function that iterates over each edge in each path (ref and homology) and tallies the number
@@ -278,6 +283,8 @@ def get_tallies(paths, edge_dict):
     tally_count = 0
     for i in paths:
         print(f'{i}: {tally_reads_in_path(i, edge_dict)}')
+        # print(f'{i}')
+
         tally_count += tally_reads_in_path(i, edge_dict)
     return tally_count
 
@@ -287,7 +294,15 @@ total_hom = get_tallies(hom_path, read_edges)
 print(f"Homology arm: {total_hom}")
 print(f"Reference: {total_ref}")
 
+print(reverse_dict_search(node_dict, "homology_arm_35426:0-138+"))
 
 # Next, make a table with the homology arm coverage and ref coverage for each homology arm.
 
 
+def make_coverage_table(path_ids):
+    """
+    This function will take a list of path names and return a table of the coverage of each path.
+    Format of the table is to be decided.
+    :param path_ids:
+    :return:
+    """
