@@ -1,5 +1,6 @@
 import odgi
 import pandas as pd
+import csv
 
 # In order to use this script, you might need to run these two commands in the terminal:
 # env LD_PRELOAD=libjemalloc.so.2 PYTHONPATH=lib python3 -c 'import odgi'
@@ -8,8 +9,11 @@ import pandas as pd
 # Put the path to the .og and .gfa files here:
 # og_path = "Test/test_1.og"
 og_path = "yeast+edits.og"
-gaf_path = "GE00001631-DOT_H11_S191_R2_001.subset.gaf"
+# gaf_path = "GE00001631-DOT_H11_S191_R2_001.subset.gaf"
 # gaf_path = "Test/test.gaf"
+gaf_path = "GE00001631-DOT_A07_S103_R1_001.subset.gaf"
+name_for_output = "GE00001631-DOT_A07_S103_R1_001.subset"
+
 gr = odgi.graph()
 gr.load(og_path)
 path_names = []
@@ -355,5 +359,30 @@ def make_coverage_table(path_ids):
     return coverage_list
 
 
-make_coverage_table(paths_for_coverage)
+cov_list = make_coverage_table(paths_for_coverage)
+
+
+def write_to_tsv(coverage_list):
+    """
+    This function will take a list of coverage data and write it to a csv file.
+    """
+    # with open(f"{name_for_output}.csv", "w") as csv_file:
+    #     writer = csv.writer(csv_file)
+    #     writer.writerow(["Homology arm", "Homology arm coverage", "Reference coverage"])
+    #     for i in coverage_list:
+    #         writer.writerow(i)
+    #
+    with open(f"{name_for_output}.tsv", "wt") as tsv_file:
+        tsv_writer = csv.writer(tsv_file, delimiter='\t')
+        tsv_writer.writerow(["Homology arm", "Homology arm coverage", "Reference coverage"])
+        for i in coverage_list:
+            tsv_writer.writerow(i)
+
+
+write_to_tsv(cov_list)
+
+print("Done!")
+
+
+# Need to clean up this script, make it more modular, and make it more readable. Also, make it more efficient.
 
