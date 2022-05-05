@@ -37,6 +37,8 @@ def show_steps(handle):
 
 # Everything above this line was borrowed and slightly adapted from the odgi tutorial on GitHub
 gr.for_each_handle(show_steps)
+
+
 # The list "all_path" contains a list in the form of [node_id, path_name]
 
 
@@ -61,6 +63,7 @@ def read_gaf(gaf_file_name):
 
 
 gaf_nodes = read_gaf(gaf_path)
+
 
 # The code below names the columns in the gaf file, in case you want to use more than just the nodes that
 # had reads mapped to them.
@@ -196,8 +199,8 @@ def create_edge_dict(edges):
             temp = sorted(temp)
             edge_list.append(tuple(temp))
         elif len(nodes) > 2:
-            for j in range(len(nodes)-1):
-                temp = (int(nodes[j]), int(nodes[j+1]))
+            for j in range(len(nodes) - 1):
+                temp = (int(nodes[j]), int(nodes[j + 1]))
                 temp = sorted(temp)
                 edge_list.append(tuple(temp))
 
@@ -282,7 +285,7 @@ def get_tallies(paths, edge_dict):
     """
     tally_count = 0
     for i in paths:
-        print(f'{i}: {tally_reads_in_path(i, edge_dict)}')
+        # print(f'{i}: {tally_reads_in_path(i, edge_dict)}')
         # print(f'{i}')
 
         tally_count += tally_reads_in_path(i, edge_dict)
@@ -294,9 +297,42 @@ total_hom = get_tallies(hom_path, read_edges)
 print(f"Homology arm: {total_hom}")
 print(f"Reference: {total_ref}")
 
-print(reverse_dict_search(node_dict, "homology_arm_35426:0-138+"))
+
+# print(reverse_dict_search(node_dict, "homology_arm_35426:0-138+"))
 
 # Next, make a table with the homology arm coverage and ref coverage for each homology arm.
+# I need to group the corresponding homology arm and ref-homology arm together.
+
+
+def num_edges(path):
+    """
+    This function takes a path and returns the number of edges in the path.
+    :param path:
+    :return:
+    """
+    return len(create_edges(reverse_dict_search(node_dict, path)))
+
+
+def group_paths(paths):
+    """
+    This function takes a list of homology arm paths and groups the corresponding reference paths (over the
+    homology arm path range) together.
+    :param paths:
+    :return:
+    """
+    grouped_paths = []
+    # This list will be in the form: [homology_arm_path, ref_path]. Remember that the ref_path is a sub-path over the
+    # homology arm path's range.
+    for hpath in paths:
+        grouped_paths.append([hpath, num_edges(hpath), f"ref_{hpath}", num_edges(f"ref_{hpath}")])
+        # print([hpath, num_edges(hpath), f"ref_{hpath}", num_edges(f"ref_{hpath}")])
+    return grouped_paths
+
+
+paths_for_coverage = group_paths(hom_path)
+
+
+# print(paths_for_coverage)
 
 
 def make_coverage_table(path_ids):
@@ -306,3 +342,18 @@ def make_coverage_table(path_ids):
     :param path_ids:
     :return:
     """
+    coverage_list = []
+    # this list will be in the form: [[hom_arm_name, hom_arm_coverage, ref_arm_coverage], [etc]]
+    for path in path_ids[1:]:
+        if path[1] != 0 and path[3] != 0:
+            coverage_list.append(
+                [path[0], tally_reads_in_path(path[0], read_edges) / path[1],
+                 tally_reads_in_path(path[2], read_edges) / path[3]])
+
+            print([path[0], tally_reads_in_path(path[0], read_edges) / path[1],
+                   tally_reads_in_path(path[2], read_edges) / path[3]])
+    return coverage_list
+
+
+make_coverage_table(paths_for_coverage)
+
