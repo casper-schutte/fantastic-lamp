@@ -348,14 +348,19 @@ def make_coverage_table(path_ids):
     """
     coverage_list = []
     # this list will be in the form: [[hom_arm_name, hom_arm_coverage, ref_arm_coverage], [etc]]
+    # Expanded form: [[hom_arm_name, hom_arm_coverage, ref_subpath_coverage, #_of_hom_arm_edges,
+    # count_for_hom_arm, #_of_ref_subpath_edges, count_for_ref_subpath], [etc]]
     for path in path_ids[1:]:
         if path[1] != 0 and path[3] != 0:
             coverage_list.append(
                 [path[0], tally_reads_in_path(path[0], read_edges) / path[1],
-                 tally_reads_in_path(path[2], read_edges) / path[3]])
-
+                 tally_reads_in_path(path[2], read_edges) / path[3], path[1], tally_reads_in_path(path[0], read_edges),
+                 path[3], tally_reads_in_path(path[2], read_edges)])
+            # Clean this (functional) mess up.
             print([path[0], tally_reads_in_path(path[0], read_edges) / path[1],
-                   tally_reads_in_path(path[2], read_edges) / path[3]])
+                   tally_reads_in_path(path[2], read_edges) / path[3], path[1],
+                   tally_reads_in_path(path[0], read_edges),
+                   path[3], tally_reads_in_path(path[2], read_edges)])
     return coverage_list
 
 
@@ -374,7 +379,8 @@ def write_to_tsv(coverage_list):
     #
     with open(f"{name_for_output}.tsv", "wt") as tsv_file:
         tsv_writer = csv.writer(tsv_file, delimiter='\t')
-        tsv_writer.writerow(["Homology arm", "Homology arm coverage", "Reference coverage"])
+        tsv_writer.writerow(["Homology arm", "Homology arm coverage", "Reference coverage", "Homology arm edges",
+                             "Count for homology arm", "Reference edges", "Count for reference"])
         for i in coverage_list:
             tsv_writer.writerow(i)
 
@@ -383,6 +389,4 @@ write_to_tsv(cov_list)
 
 print("Done!")
 
-
 # Need to clean up this script, make it more modular, and make it more readable. Also, make it more efficient.
-
