@@ -9,10 +9,11 @@ import csv
 # Put the path to the .og and .gfa files here:
 # og_path = "Test/test_1.og"
 og_path = "yeast+edits.og"
-# gaf_path = "GE00001631-DOT_H11_S191_R2_001.subset.gaf"
+gaf_path = "GE00001631-DOT_H11_S191_R2_001.subset.gaf"
 # gaf_path = "Test/test.gaf"
-gaf_path = "GE00001631-DOT_A07_S103_R1_001.subset.gaf"
-name_for_output = "GE00001631-DOT_A07_S103_R1_001.subset"
+# gaf_path = "GE00001631-DOT_A07_S103_R1_001.subset.gaf"
+# name_for_output = "GE00001631-DOT_A07_S103_R1_001.subset"
+name_for_output = "test"
 
 gr = odgi.graph()
 gr.load(og_path)
@@ -62,7 +63,7 @@ def read_gaf(gaf_file_name):
     for j in range(0, len(gaf_file)):
         # Collect the node IDs in the appropriate column
         nodes.append(gaf_file[6][j])
-    # print(f"nodes: {nodes[:10]}")
+    print(f"nodes: {nodes[:10]}")
     return nodes
 
 
@@ -93,8 +94,8 @@ pan_path = make_paths(all_path)
 
 def separate_paths(paths):
     """
-    This function returns all the path names in a uniform format. This is necessary because the
-    some of the names are in a list with more than 1 element.
+    This function returns all the path names in a uniform format. This is necessary because
+    some names are in a list with more than 1 element.
     :param paths:
     :return:
     """
@@ -107,6 +108,7 @@ def separate_paths(paths):
         else:
             if x[1][0] not in sep_path_names:
                 sep_path_names.append(x[1][0])
+    print(f"sep_path_names: {sep_path_names}")
     return sep_path_names
 
 
@@ -176,14 +178,16 @@ def find_legit_edges(reads):
     con_nodes = []
     for x in reads:
         if x.count('<') > 1 or x.count('>') > 1:
-            x = x.replace('<', '>')
+            x = x.replace('<', '>')  # This makes it easier to split the string.
+            # This is something that could change if we are interested in the orientation of the reads.
             con_nodes.append(x[1:].split('>'))
-
+            # The [1:] above takes away the leading empty string that is left behind by the split function.
     # print(len(con_nodes))
     return con_nodes
 
 
 my_edges = find_legit_edges(gaf_nodes)
+# print(my_edges)
 
 
 def create_edge_dict(edges):
@@ -191,7 +195,8 @@ def create_edge_dict(edges):
     This function takes a list of edges and creates a dictionary with the tuple of 2 concurrent nodes
     as the key and the number of reads mapping to that edge as the value. Tuples are sorted such that
     they are in ascending order. This means that the first node in the tuple is always the smaller node,
-    regardless of original orientation of the read.
+    regardless of original orientation of the read. This is for uniformity of the data as the list of
+    edges in the reference and homology arm paths are also created in the same fashion.
     :param edges:
     :return:
     """
@@ -296,10 +301,10 @@ def get_tallies(paths, edge_dict):
     return tally_count
 
 
-total_ref = get_tallies(ref_path, read_edges)
-total_hom = get_tallies(hom_path, read_edges)
-print(f"Homology arm: {total_hom}")
-print(f"Reference: {total_ref}")
+# total_ref = get_tallies(ref_path, read_edges)
+# total_hom = get_tallies(hom_path, read_edges)
+# print(f"Homology arm: {total_hom}")
+# print(f"Reference: {total_ref}")
 
 
 # print(reverse_dict_search(node_dict, "homology_arm_35426:0-138+"))
@@ -315,6 +320,10 @@ def num_edges(path):
     :return:
     """
     return len(create_edges(reverse_dict_search(node_dict, path)))
+
+
+print(f"{'homology_arm_34728-'}: {num_edges('homology_arm_34728-')}")
+# Verified this works correctly.
 
 
 def group_paths(paths):
@@ -357,26 +366,28 @@ def make_coverage_table(path_ids):
                  tally_reads_in_path(path[2], read_edges) / path[3], path[1], tally_reads_in_path(path[0], read_edges),
                  path[3], tally_reads_in_path(path[2], read_edges)])
             # Clean this (functional) mess up.
-            print([path[0], tally_reads_in_path(path[0], read_edges) / path[1],
-                   tally_reads_in_path(path[2], read_edges) / path[3], path[1],
-                   tally_reads_in_path(path[0], read_edges),
-                   path[3], tally_reads_in_path(path[2], read_edges)])
+            # print([path[0], tally_reads_in_path(path[0], read_edges) / path[1],
+            #        tally_reads_in_path(path[2], read_edges) / path[3], path[1],
+            #        tally_reads_in_path(path[0], read_edges),
+            #        path[3], tally_reads_in_path(path[2], read_edges)])
     return coverage_list
 
 
 cov_list = make_coverage_table(paths_for_coverage)
+# The line below sorts the list by the homology arm coverage, making it easy to see which hom_arm has the highest
+# coverage.
+sorted_cov_list = sorted(cov_list, key=lambda row: row[1], reverse=True)
 
 
 def write_to_tsv(coverage_list):
     """
-    This function will take a list of coverage data and write it to a csv file.
+    This function will take a list of coverage data and write it to a tsv file.
     """
     # with open(f"{name_for_output}.csv", "w") as csv_file:
     #     writer = csv.writer(csv_file)
     #     writer.writerow(["Homology arm", "Homology arm coverage", "Reference coverage"])
     #     for i in coverage_list:
     #         writer.writerow(i)
-    #
     with open(f"{name_for_output}.tsv", "wt") as tsv_file:
         tsv_writer = csv.writer(tsv_file, delimiter='\t')
         tsv_writer.writerow(["Homology arm", "Homology arm coverage", "Reference coverage", "Homology arm edges",
@@ -385,8 +396,9 @@ def write_to_tsv(coverage_list):
             tsv_writer.writerow(i)
 
 
-write_to_tsv(cov_list)
+write_to_tsv(sorted_cov_list)
 
+print(reverse_dict_search(node_dict, "homology_arm_34728-"))
 print("Done!")
 
-# Need to clean up this script, make it more modular, and make it more readable. Also, make it more efficient.
+# Need to clean up this script and make it more readable. Also, make it more efficient.
