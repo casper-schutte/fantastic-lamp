@@ -9,9 +9,9 @@ import csv
 # Put the path to the .og and .gfa files here:
 # og_path = "Test/test_1.og"
 og_path = "yeast+edits.og"
-gaf_path = "GE00001631-DOT_H11_S191_R2_001.subset.gaf"
+# gaf_path = "GE00001631-DOT_H11_S191_R2_001.subset.gaf"
 # gaf_path = "Test/test.gaf"
-# gaf_path = "GE00001631-DOT_A07_S103_R1_001.subset.gaf"
+gaf_path = "GE00001631-DOT_A07_S103_R1_001.subset.gaf"
 # name_for_output = "GE00001631-DOT_A07_S103_R1_001.subset"
 name_for_output = "test"
 
@@ -90,6 +90,7 @@ def make_paths(path):
 
 
 pan_path = make_paths(all_path)
+# The list "pan_path" contains lists in the form of [node_id, [path_name, path_name, ...]]
 
 
 def separate_paths(paths):
@@ -108,7 +109,7 @@ def separate_paths(paths):
         else:
             if x[1][0] not in sep_path_names:
                 sep_path_names.append(x[1][0])
-    print(f"sep_path_names: {sep_path_names}")
+    # print(f"sep_path_names: {sep_path_names}")
     return sep_path_names
 
 
@@ -133,6 +134,8 @@ def get_path_names(paths):
 
 
 hom_path, ref_path = get_path_names(separate_paths(pan_path))
+# These are just lists of the path names for the homology arms and the reference.
+# print(pan_path)
 
 
 def create_node_dict(path):
@@ -141,14 +144,15 @@ def create_node_dict(path):
     :param path:
     :return:
     """
-    path_dict = {}
+    temp_dict = {}
     for i in path:
-        path_dict[i[0]] = i[1]
+        temp_dict[i[0]] = i[1]
 
-    return path_dict
+    return temp_dict
 
 
 node_dict = create_node_dict(pan_path)
+# This dictionary can be used to look up the path names for a given node.
 
 
 def get_path(node):
@@ -224,28 +228,28 @@ def create_edge_dict(edges):
 read_edges = create_edge_dict(my_edges)
 
 
-def reverse_dict_search(dictionary, value):
+def create_reverse_dict(dictionary):
     """
-    This function takes a dictionary and a value and returns a list of keys that have that value.
+    This function takes as input a dictionary where there the keys are nodes and the values are a list of paths.
+    The output is a dictionary where the keys are paths and the values are a list of nodes. This dictionary has far
+    fewer entries than the input dictionary, making it much more efficient to look up the nodes for a given path.
     :param dictionary:
-    :param value:
     :return:
     """
-    # Old method:
-    # return [k for k, v in dictionary.items() if v == value[n] for n in range(len(value))]
-    key = []
+    graph_dict = {}
     for k, v in dictionary.items():
-        if value in v:
-            key.append(k)
-    return key
+        for x in v:
+            if x in graph_dict:
+                graph_dict[x].append(k)
+            else:
+                graph_dict[x] = [k]
+    return graph_dict
 
 
-# testing
-# print(f'{hom_path[619]}: {reverse_dict_search(node_dict, hom_path[619])}')
-# print(f'{ref_path[1]}: {reverse_dict_search(node_dict, [ref_path[1]])}')
-
-# Next step: write a function that iterates over each edge in each path (ref and homology) and tallies the number
-# of reads that map in each path.
+path_dict = create_reverse_dict(node_dict)
+print(f"path_dict: {len(path_dict)}")
+print(f"pan_path: {len(pan_path)}")
+# Notice how much smaller the search space for the keys is in the path_dict.
 
 
 def create_edges(path):
@@ -256,6 +260,7 @@ def create_edges(path):
     :return:
     """
     edges = []
+    path = sorted(path)
     for j in range(len(path) - 1):
         temp = (int(path[j]), int(path[j + 1]))
         temp = sorted(temp)
@@ -264,32 +269,51 @@ def create_edges(path):
     return edges
 
 
-# Reminder of where what data is. The names of the paths are in ref_path and hom_path. The actual paths are called
-# with reverse_dict_search(node_dict, PATH[i]). They then need to be made into edges with create_edges(). I can
-# then compare the edges of the paths to the edges that had reads mapped to them.
-
-def tally_reads_in_path(path, edge_dict):
+def create_edge_tally_dict(dictionary, paths):
     """
-    This function takes a path and a dictionary of edges and tallies the number of reads that map to each edge in
-    the path.
-    :param path:
-    :param edge_dict:
+    This function takes a dictionary of edges {(node1, node2): number of reads} and a list of path names.
+    It then creates a dictionary that maps the path names to the number of edges in the path that had reads mapped
+    to them.
+    :param dictionary:
+    :param paths:
     :return:
     """
-    read_tally = 0
-    graph_edges = create_edges(reverse_dict_search(node_dict, path))
-    for edge in graph_edges:
-        if edge in edge_dict:
-            read_tally += edge_dict[edge]
-    return read_tally
+    tally_dictionary = {}
+    for i in paths:
+        for j in i:
+            tally = 0
+            # print(f"{j}: {path_dict.get(j)}")
+            # print(f"path: {j}, tally: {create_edges(reverse_dict_search(node_dict, j))}")
+            # tally_dictionary[j] = len(create_edges(reverse_dict_search(node_dict, j)))
+            temp = create_edges(path_dict.get(j))
+            for k in temp:
+                if dictionary.get(k) is not None:
+                    tally += dictionary.get(k)
+            tally_dictionary[j] = tally
+
+    print(len(tally_dictionary))
+    return tally_dictionary
 
 
-def get_tallies(paths, edge_dict):
+# print(get_path_names(separate_paths(pan_path)))
+edge_tally = create_edge_tally_dict(read_edges, get_path_names(separate_paths(pan_path)))
+# print(edge_tally)
+
+
+def tally_reads_in_path(path):
+    """
+    This function takes a path and returns the number of edges in the path that had reads mapped to them.
+    :param path:
+    :return:
+    """
+    return edge_tally[path]
+
+
+def get_tallies(paths):
     """
     This function takes a list of paths and a dictionary of edges and tallies the number of reads that mapped
     to each path.
     :param paths:
-    :param edge_dict:
     :return:
     """
     tally_count = 0
@@ -297,7 +321,7 @@ def get_tallies(paths, edge_dict):
         # print(f'{i}: {tally_reads_in_path(i, edge_dict)}')
         # print(f'{i}')
 
-        tally_count += tally_reads_in_path(i, edge_dict)
+        tally_count += tally_reads_in_path(i)
     return tally_count
 
 
@@ -319,7 +343,8 @@ def num_edges(path):
     :param path:
     :return:
     """
-    return len(create_edges(reverse_dict_search(node_dict, path)))
+
+    return len(create_edges(path_dict.get(path)))
 
 
 print(f"{'homology_arm_34728-'}: {num_edges('homology_arm_34728-')}")
@@ -337,8 +362,8 @@ def group_paths(paths):
     # This list will be in the form: [homology_arm_path, ref_path]. Remember that the ref_path is a sub-path over the
     # homology arm path's range.
     for hpath in paths:
-        grouped_paths.append([hpath, num_edges(hpath), f"ref_{hpath}", num_edges(f"ref_{hpath}")])
-        # print([hpath, num_edges(hpath), f"ref_{hpath}", num_edges(f"ref_{hpath}")])
+        if num_edges(hpath) != 0 and num_edges(f"ref_{hpath}") != 0:
+            grouped_paths.append([hpath, num_edges(hpath), f"ref_{hpath}", num_edges(f"ref_{hpath}")])
     return grouped_paths
 
 
@@ -362,9 +387,9 @@ def make_coverage_table(path_ids):
     for path in path_ids[1:]:
         if path[1] != 0 and path[3] != 0:
             coverage_list.append(
-                [path[0], tally_reads_in_path(path[0], read_edges) / path[1],
-                 tally_reads_in_path(path[2], read_edges) / path[3], path[1], tally_reads_in_path(path[0], read_edges),
-                 path[3], tally_reads_in_path(path[2], read_edges)])
+                [path[0], tally_reads_in_path(path[0]) / path[1],
+                 tally_reads_in_path(path[2]) / path[3], path[1], tally_reads_in_path(path[0]),
+                 path[3], tally_reads_in_path(path[2])])
             # Clean this (functional) mess up.
             # print([path[0], tally_reads_in_path(path[0], read_edges) / path[1],
             #        tally_reads_in_path(path[2], read_edges) / path[3], path[1],
@@ -398,7 +423,7 @@ def write_to_tsv(coverage_list):
 
 write_to_tsv(sorted_cov_list)
 
-print(reverse_dict_search(node_dict, "homology_arm_34728-"))
+# print(path_dict["homology_arm_DesignID+"])
 print("Done!")
 
 # Need to clean up this script and make it more readable. Also, make it more efficient.
