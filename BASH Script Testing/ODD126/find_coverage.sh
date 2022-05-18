@@ -1,20 +1,27 @@
 #!/bin/bash
 
-# Need to perform all the initial steps in commands.sh, as well as the injection
-# of the reference genome over the range of the homology arms. Static graphs
-# Alternatively, we could just perform copy over the files that do not need to change for each
-# experiment.
-# Then, the GAF file (reads aligned to the graph) is constructed for each data set. Iterative graph creation.
-# Finally, the Python script will be called to perform the coverage analysis.
+# The commands below are to ensure that odgi works correctly in the python script.
+env LD_PRELOAD=libjemalloc.so.2 PYTHONPATH=lib python3 -c 'import odgi'
+export LD_PRELOAD=/lib/x86_64-linux-gnu/libjemalloc.so.2
+
+# This script requires as input:
+# 1) a design library csv file (DesignLibraryDetails_ODD126.csv)
+# 2) a reference genome (GCA_010356925.1_ASM1035692v1_genomic.fna)
+# 3) the python script compare_coverage.py (in the same directory as this script)
+# 4) a text document (data_names.txt) containing the names of the files containing the reads, without the .fastq.gz
+# extension eg: "GE00001631-DOT_H11_S191_R2_001.fastq.gz" should be "GE00001631-DOT_H11_S191_R2_001"
+# The output is in the same folder as the original files,
 
 # 1) Make static graphs: (from commands.sh)
 # extract the homology arms as FASTA
-cat ODD126_homology_arms.csv | tr , '\t' | awk '{print ">homology_arm_"$1"; "$2; }' > ODD126_homology_arms.fa
-
 # The names for the homology arms are in DesignLibraryDetails_ODD126.csv, column 1. The corresponding reference seq is
-# in column BA, the 53rd column.
+# in column BA, the 53rd column, and the corresponding homology_arm edit sequence is in column 54.
+# Note for future use: can if the design library is different, create a new variable containing the appropriate column
+# numbers.
+cat DesignLibraryDetails_ODD126.csv | awk -F',' '{print ">homology_arm_"$1; print $54;}' | tr -d \- > ODD126_homology_arms.fa
 cat DesignLibraryDetails_ODD126.csv | awk -F',' '{print ">ref_homology_arm_"$1; print $53;}' | tr -d \- > ref_subpaths.fa
 
+# Combine homology arms and reference over the range of the homology arms into one FASTA file.
 cat ref_subpaths.fa ODD126_homology_arms.fa > ODD126_ref_and_hom_arms.fa
 
 # map the homology arms against the reference
@@ -38,10 +45,14 @@ vg index -p -g yeast+edits.og.gfa.gcsa -t 16 yeast+edits.og.gfa.xg
 # experiment change.
 
 # 2) Make GAF files for each data set:
-# example:
-# vg map -x yeast+edits.og.gfa.xg -g yeast+edits.og.gfa.gcsa -t 16 -% -f GE00001631-DOT_A07_S103_R1_001 | pv -l >GE00001631-DOT_A07_S103_R1_001.subset.gaf
+cat Data_names.txt | while read -r line; do
+  vg map -x yeast+edits.og.gfa.xg -g yeast+edits.og.gfa.gcsa -t 16 -% -f "$line".fastq.gz | pv -l >"$line".gaf
 
+done
 
 # 3) Run coverage analysis with Python script:
+cat Data_names.txt | while read -r line; do
+  python3 compare_coverage.py "$line".test.gaf "$line"
+done
 
-
+echo "Done!"

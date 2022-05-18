@@ -10,17 +10,16 @@ import sys
 # Put the path to the .og and .gfa files here:
 # og_path = "Test/test_1.og"
 og_path = "yeast+edits.og"
-gaf_path = "GE00001631-DOT_H11_S191_R2_001.subset.gaf"
+# gaf_path = "GE00001631-DOT_H11_S191_R2_001.subset.gaf"
 # gaf_path = "Test/test.gaf"
-# gaf_path = "GE00001631-DOT_A07_S103_R1_001.subset.gaf"
+gaf_path = "GE00001631-DOT_A07_S103_R1_001.test.gaf"
 # name_for_output = "GE00001631-DOT_A07_S103_R1_001.subset"
-name_for_output = "test"
+name_for_output = "test1"
 # For automation:
-# if sys.argv[1:]:
-#     og_path = sys.argv[1]
-#     gaf_path = sys.argv[2]
+if sys.argv[1:]:
+    gaf_path = sys.argv[1]
+    name_for_output = sys.argv[2]
 
-# name_for_output = gaf_path.split(".")[0]
 
 gr = odgi.graph()
 gr.load(og_path)
