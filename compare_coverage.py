@@ -1,7 +1,7 @@
 import odgi
 import pandas as pd
 import csv
-# import sys
+import sys
 
 # In order to use this script, you might need to run these two commands in the terminal:
 # env LD_PRELOAD=libjemalloc.so.2 PYTHONPATH=lib python3 -c 'import odgi'
@@ -12,13 +12,13 @@ import csv
 og_path = "yeast+edits.og"
 # gaf_path = "GE00001631-DOT_H11_S191_R2_001.subset.gaf"
 # gaf_path = "Test/test.gaf"
-gaf_path = "GE00001631-DOT_A07_S103_R1_001.subset.gaf"
+gaf_path = "GE00001631-DOT_A07_S103_R1_001.test.gaf"
 # name_for_output = "GE00001631-DOT_A07_S103_R1_001.subset"
-name_for_output = "test"
+name_for_output = "test1"
 # For automation:
-# if sys.argv[1:]:
-#     og_path = sys.argv[1]
-#     gaf_path = sys.argv[2]
+if sys.argv[1:]:
+    gaf_path = sys.argv[1]
+    name_for_output = sys.argv[2]
 
 
 gr = odgi.graph()
