@@ -25,10 +25,10 @@ cat DesignLibraryDetails_ODD126.csv | awk -F',' '{print ">ref_homology_arm_"$1; 
 cat ref_subpaths.fa ODD126_homology_arms.fa > ODD126_ref_and_hom_arms.fa
 
 # map the homology arms against the reference
-minimap2 -k 19 -w 1 -cx sr GCA_010356925.1_ASM1035692v1_genomic.fna ODD126_ref_and_hom_arms.fa >ODD126_ref_and_hom_arms.paf
+minimap2 -k 19 -w 1 -cx sr ref_and_mt.fna ODD126_ref_and_hom_arms.fa >ODD126_ref_and_hom_arms.paf
 
-# combine the inputs to seqwish in a single file
-cat GCA_010356925.1_ASM1035692v1_genomic.fna ODD126_ref_and_hom_arms.fa >yeast+edits.fa
+# combine the inputs to seqwish in a single file (and add plasmid sequences)
+cat ref_and_mt.fna ODD126_ref_and_hom_arms.fa ODD126_augmented_CB39.fasta >yeast+edits.fa
 
 # induce the variation graph
 seqwish -g yeast+edits.gfa -s yeast+edits.fa -p ODD126_ref_and_hom_arms.paf -P
@@ -44,15 +44,11 @@ vg index -p -g yeast+edits.og.gfa.gcsa -t 16 yeast+edits.og.gfa.xg
 # The files generated so far can be used for all the data sets, as they do not change. Only the reads from the
 # experiment change.
 
-# 2) Make GAF files for each data set:
+# 2) Make GAF files and run python script for each data set:
+
 cat Data_names.txt | while read -r line; do
   vg map -x yeast+edits.og.gfa.xg -g yeast+edits.og.gfa.gcsa -t 16 -% -f "$line".fastq.gz | pv -l >"$line".gaf
-
-done
-
-# 3) Run coverage analysis with Python script:
-cat Data_names.txt | while read -r line; do
-  python3 compare_coverage.py "$line".test.gaf "$line"
+  python3 compare_coverage.py "$line".gaf "$line"
 done
 
 echo "Done!"
