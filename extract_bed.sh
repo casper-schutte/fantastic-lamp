@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Got the H-arm names from my the csv file where they are just numbered. Added the "homology_arm_" 
-# bit. 
+# bit. Do not need to use these commands anymore.
 
 
 odgi untangle -R hom_names.txt -i yeast+edits.og -t 4 > test.bed
