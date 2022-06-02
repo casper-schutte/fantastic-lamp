@@ -60,9 +60,12 @@ def read_gaf(gaf_file_name):
     # further down the line.
     nodes = []
     for j in range(0, len(gaf_file)):
+        # set the MapQ filter below:
+        if gaf_file[12][j] > 30:
+            nodes.append(gaf_file[6][j])
         # Collect the node IDs in the appropriate column
-        nodes.append(gaf_file[6][j])
-    print(f"nodes: {nodes[:10]}")
+        # nodes.append(gaf_file[6][j])
+    # print(f"nodes: {nodes[:10]}")
     return nodes
 
 
@@ -87,6 +90,7 @@ def make_paths(path):
 
 
 pan_path = make_paths(all_path)
+# print(sorted(pan_path))
 # The list "pan_path" contains lists in the form of [node_id, [path_name, path_name, ...]]
 
 
@@ -106,6 +110,7 @@ def separate_paths(paths):
         else:
             if x[1][0] not in sep_path_names:
                 sep_path_names.append(x[1][0])
+    # print(f"sep_path_names: {sep_path_names}")
     return sep_path_names
 
 
@@ -116,9 +121,7 @@ def get_path_names(paths):
     :param paths:
     :return:
     """
-    # Need to write this function such that it would work for any example, not only
-    # this specific one. Could take the names from the original files, need to think
-    # about this.
+    # The bash script ensures that the correct names are given (the homology arm paths all start with "h")
     h_arms = []
     ref_paths = []
     for path_name in paths:
@@ -130,6 +133,7 @@ def get_path_names(paths):
 
 
 hom_path, ref_path = get_path_names(separate_paths(pan_path))
+print(f"hom_path: {len(hom_path)}")
 # These are just lists of the path names for the homology arms and the reference.
 
 
@@ -143,6 +147,7 @@ def create_node_dict(path):
     for i in path:
         temp_dict[i[0]] = i[1]
 
+    # print(f"temp_dict: {len(temp_dict)}")
     return temp_dict
 
 
@@ -278,7 +283,7 @@ def create_edge_tally_dict(dictionary, paths):
                     tally += dictionary.get(k)
             tally_dictionary[j] = tally
 
-    print(len(tally_dictionary))
+    # print(len(tally_dictionary))
     return tally_dictionary
 
 
@@ -324,7 +329,11 @@ def num_edges(path):
     return len(create_edges(path_dict.get(path)))
 
 
-print(f"{'homology_arm_34728-'}: {num_edges('homology_arm_34728-')}")
+# print(f"{'homology_arm_34664-'}: {num_edges('homology_arm_34664-')}, "
+#       f"tally: {tally_reads_in_path('homology_arm_34664-')}, ")
+# print(f"{'homology_arm_34649-'}: {num_edges('homology_arm_34649-')},"
+#       f" tally: {tally_reads_in_path('homology_arm_34649-')}")
+
 # Verified this works correctly.
 
 
@@ -356,8 +365,7 @@ def make_coverage_table(path_ids):
     :return:
     """
     coverage_list = []
-    # this list will be in the form: [[hom_arm_name, hom_arm_coverage, ref_arm_coverage], [etc]]
-    # Expanded form: [[hom_arm_name, hom_arm_coverage, ref_subpath_coverage, #_of_hom_arm_edges,
+    # this list will be in the form: [[hom_arm_name, hom_arm_coverage, ref_subpath_coverage, #_of_hom_arm_edges,
     # count_for_hom_arm, #_of_ref_subpath_edges, count_for_ref_subpath], [etc]]
     for path in path_ids[1:]:
         if path[1] != 0 and path[3] != 0:
@@ -388,4 +396,4 @@ def write_to_tsv(coverage_list):
 
 write_to_tsv(sorted_cov_list)
 print("Done!")
-# Need to clean up this script and make it more readable. Also, make it more efficient.
+
