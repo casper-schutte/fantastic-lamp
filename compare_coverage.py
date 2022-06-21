@@ -1,7 +1,6 @@
 import odgi
-import pandas as pd
 import csv
-import sys
+import argparse
 
 # In order to use this script, you might need to run these two commands in the terminal:
 # env LD_PRELOAD=libjemalloc.so.2 PYTHONPATH=lib python3 -c 'import odgi'
@@ -9,15 +8,19 @@ import sys
 
 # Put the path to the .og and .gfa files here:
 
-og_path = "yeast+edits.og"
-# For automation:
-if sys.argv[1:]:
-    gaf_path = sys.argv[1]
-    name_for_output = sys.argv[2]
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--og-path", required=True)
+    parser.add_argument("--gaf-path", required=True)
+    parser.add_argument("--out-path", required=True)
+    return parser.parse_args()
+
+args = parse_args()
 
 
 gr = odgi.graph()
-gr.load(og_path)
+gr.load(args.og_path)
 path_names = []
 node_ids = []
 gr.for_each_path_handle(lambda p: path_names.append(gr.get_path_name(p)))
@@ -53,23 +56,17 @@ def read_gaf(gaf_file_name):
     :param gaf_file_name:
     :return:
     """
-    headers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
-    gaf_file = pd.read_csv(gaf_file_name, sep="\t", header=None, names=headers)
-    # gaf_file = gaf_file.dropna()
-    # Using dropna() broke something? Will just have to deal with the missing values manually
-    # further down the line.
     nodes = []
-    for j in range(0, len(gaf_file)):
-        # set the MapQ filter below:
-        if gaf_file[12][j] > 30:
-            nodes.append(gaf_file[6][j])
-        # Collect the node IDs in the appropriate column
-        # nodes.append(gaf_file[6][j])
-    # print(f"nodes: {nodes[:10]}")
+    for row in open(gaf_file_name):
+        row = row.split()
+        qual = int(row[11])
+        if qual < 30:
+            continue
+        nodes.append(row[5])
     return nodes
 
 
-gaf_nodes = read_gaf(gaf_path)
+gaf_nodes = read_gaf(args.gaf_path)
 # The code below names the columns in the gaf file, in case you want to use more than just the nodes that
 # had reads mapped to them.
 # specify headers: headers = ["q_name", "q_len", "q_start", "q_end", "rel_orient", "path", "path_len", "path_start",
@@ -386,7 +383,7 @@ def write_to_tsv(coverage_list):
     """
     This function will take a list of coverage data and write it to a tsv file.
     """
-    with open(f"{name_for_output}.tsv", "wt") as tsv_file:
+    with open(args.out_path, "wt") as tsv_file:
         tsv_writer = csv.writer(tsv_file, delimiter='\t')
         tsv_writer.writerow(["Homology arm", "Homology arm coverage", "Reference coverage", "Homology arm edges",
                              "Count for homology arm", "Reference edges", "Count for reference"])
@@ -396,4 +393,3 @@ def write_to_tsv(coverage_list):
 
 write_to_tsv(sorted_cov_list)
 print("Done!")
-
