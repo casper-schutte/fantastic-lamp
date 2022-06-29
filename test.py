@@ -1,18 +1,25 @@
-# Old, do not use
 import odgi
 import pandas as pd
-# import re
-# import itertools as it
+import csv
+import sys
 
-# In order to use this script, I need to run these two commands in the terminal:
+# In order to use this script, you might need to run these two commands in the terminal:
 # env LD_PRELOAD=libjemalloc.so.2 PYTHONPATH=lib python3 -c 'import odgi'
 # export LD_PRELOAD=/lib/x86_64-linux-gnu/libjemalloc.so.2
 
+# Put the path to the .og and .gfa files here:
+
+og_path = "yeast+edits.og"
+# For automation:
+if sys.argv[1:]:
+    gaf_path = sys.argv[1]
+    name_for_output = sys.argv[2]
+
+
 gr = odgi.graph()
-gr.load("yeast+edits.og")
+gr.load(og_path)
 path_names = []
 node_ids = []
-# steps = []
 gr.for_each_path_handle(lambda p: path_names.append(gr.get_path_name(p)))
 gr.for_each_path_handle(lambda p: node_ids.append(p))
 
@@ -24,6 +31,7 @@ def step_str(step):
 
 
 all_path = []
+# The list "all_path" contains a list in the form of [node_id, path_name]
 
 
 def show_steps(handle):
@@ -36,7 +44,6 @@ def show_steps(handle):
 
 # Everything above this line was borrowed and slightly adapted from the odgi tutorial on GitHub
 gr.for_each_handle(show_steps)
-# The list "all_path" contains a list in the form of [node_id, path_name]
 
 
 def read_gaf(gaf_file_name):
@@ -53,20 +60,20 @@ def read_gaf(gaf_file_name):
     # further down the line.
     nodes = []
     for j in range(0, len(gaf_file)):
+        # set the MapQ filter below:
+        if gaf_file[12][j] > 30:
+            nodes.append(gaf_file[6][j])
         # Collect the node IDs in the appropriate column
-        nodes.append(gaf_file[6][j])
-    print(f"nodes: {nodes[:10]}")
+        # nodes.append(gaf_file[6][j])
+    # print(f"nodes: {nodes[:10]}")
     return nodes
 
 
-gaf_nodes = read_gaf("GE00001631-DOT_H11_S191_R2_001.subset.gaf")
-# gaf_nodes = read_gaf("positive_control.gaf")
-
-# print(gaf_nodes)
+gaf_nodes = read_gaf(gaf_path)
+# The code below names the columns in the gaf file, in case you want to use more than just the nodes that
+# had reads mapped to them.
 # specify headers: headers = ["q_name", "q_len", "q_start", "q_end", "rel_orient", "path", "path_len", "path_start",
 # "path_end", "res_matches", "aln_block_len", "mapq"]
-
-# have now figured out how the data works and how to manipulate it
 
 
 def make_paths(path):
@@ -83,15 +90,19 @@ def make_paths(path):
 
 
 pan_path = make_paths(all_path)
-print(f'pan_path: {pan_path[:10]}')
+# print(sorted(pan_path))
+# The list "pan_path" contains lists in the form of [node_id, [path_name, path_name, ...]]
 
 
 def separate_paths(paths):
+    """
+    This function returns all the path names in a uniform format. This is necessary because
+    some names are in a list with more than 1 element.
+    :param paths:
+    :return:
+    """
     sep_path_names = []
-    # Getting the names of the paths in a uniform format
-    # This is necessary because the paths are now lists with 1 or more elements
     for x in paths:
-        # print(x[0])
         if len(x[1]) > 1:
             for y in x[1]:
                 if y not in sep_path_names:
@@ -99,82 +110,116 @@ def separate_paths(paths):
         else:
             if x[1][0] not in sep_path_names:
                 sep_path_names.append(x[1][0])
+    # print(f"sep_path_names: {sep_path_names}")
     return sep_path_names
-
-
-# separate_paths(pan_path)
-print(f'sep_path_names: {separate_paths(pan_path)[:10]}')
-
-# print(sep_path_names)
 
 
 def get_path_names(paths):
     """
     This function returns 2 lists, one with the path names for the reference
     and one for the homology arms.
-    Need to write this function such that it would work for any example, not only
-    this specific one. Could take the names from the original files, need to think
-    about this.
+    :param paths:
+    :return:
     """
+    # The bash script ensures that the correct names are given (the homology arm paths all start with "h")
     h_arms = []
     ref_paths = []
     for path_name in paths:
-        if path_name.startswith("h"):
+        if path_name.startswith("hom"):
             h_arms.append(path_name)
-        else:
+        elif path_name.startswith("ref_h"):
             ref_paths.append(path_name)
     return h_arms, ref_paths
 
+# Note: We can do away with ref_paths altogether, since we only use the ref_hom_paths for the ref coverage.
 
-hom_path, ref_path = get_path_names(separate_paths(pan_path))
+
+hom_path, ref_hom_path = get_path_names(separate_paths(pan_path))
+# print(f"hom_path: {len(hom_path)}")
+# These are just lists of the path names for the homology arms and the reference.
 
 
-def dict_test(path):
+def create_node_dict(path):
     """
     creates a dictionary with the node IDs as keys and the path names as values
     :param path:
     :return:
     """
-    path_dict = {}
+    temp_dict = {}
+    # for i in path:
+    #     temp_dict[i[0]] = i[1]
+
     for i in path:
-        path_dict[i[0]] = i[1]
 
-    return path_dict
+        shared_score = 0
+        for j in i[1]:
+            if j.startswith("hom"):
+                shared_score += 1
+            if j.startswith("ref_h"):
+                shared_score += 1
+        if shared_score < 2:
+            temp_dict[i[0]] = i[1]
+        else:
+            i[1].append("shared")
+            # print(i[1])
+            # for k in i[1]:
+            #     if k.startswith("ref_h") or k.startswith("homology_"):
+            #         i[1].remove(k)
+            temp_dict[i[0]] = i[1]
+    # print(temp_dict)
+    return temp_dict
 
 
-node_dict = dict_test(pan_path)
+node_dict = create_node_dict(pan_path)
+# This dictionary can be used to look up the path names for a given node.
 
 
-# print(node_dict.get(52430))
+# def filter_node_dict(my_dictionary):
+#     """
+#     This function filters the node dictionary to remove ref_hom paths and hom_paths when the paths
+#     both traverse the same node.
+#     :param my_dictionary:
+#     :return:
+#     """
+#     new_dict = {}
+#     for i in my_dictionary.items():
+#         shared_score = 0
+#         for j in i[1]:
+#             if j.startswith("ref_h"):
+#                 shared_score += 1
+#             if j.startswith("hom"):
+#                 shared_score += 1
+#             if shared_score < 1:
+#                 if new_dict.get(i[0]) is None:
+#                     new_dict[j] = i[1]
+#                 else:
+#                     new_dict[i[0]].append(j)
+#             else:
+#                 new_dict[i[0]] = "shared"
+#
+#     return new_dict
+
+
+# node_dict = filter_node_dict(node_dict)
 
 
 def get_path(node):
     """
     Careful, this function returns a list, even if there is only one element.
-    Use a length or type check when this function is called.
+    Use a length or type check when this function is called. This function is not used currently.
     :param node:
     :return:
     """
+    # shared = 0
+    # for path in node_dict[node]:
+    #     if path.startswith("hom"):
+    #         shared += 1
+    #     if path.startswith("ref_h"):
+    #         shared += 1
+    # if shared == 2:
+    #     return None
+    # else:
     return node_dict.get(node)
-
-
-print(f'get_path: {get_path(3)}')
-
-
-# I now have a dictionary of node_id: path_name that I can use to query whether a node (from the reads)
-# is in a reference path, homology arm, or both.
-
-# I now need to figure out how to make edges from the paths.
-
-# exploring the data:
-
-
-# eg = '<41699<41698<41697<41695<41694<41692<41691<41689<41688<41686<41684'
-# print(eg.replace('<', ','))
-#
-# for i in eg.split('<'):
-#     if len(i) > 1:
-#         print(f'node: {i}, path: {get_path(int(i))}')
 
 
 def find_legit_edges(reads):
@@ -188,17 +233,14 @@ def find_legit_edges(reads):
     con_nodes = []
     for x in reads:
         if x.count('<') > 1 or x.count('>') > 1:
-            x = x.replace('<', '>')
+            x = x.replace('<', '>')  # This makes it easier to split the string.
+            # This is something that could change if we are interested in the orientation of the reads.
             con_nodes.append(x[1:].split('>'))
-
-    # print(len(con_nodes))
+            # The [1:] above takes away the leading empty string that is left behind by the split function.
     return con_nodes
 
 
 my_edges = find_legit_edges(gaf_nodes)
-# for z in my_edges[146534]:
-#     print(z)
-#     print(f'my_path: {get_path(int(z))}')
 
 
 def create_edge_dict(edges):
@@ -206,27 +248,23 @@ def create_edge_dict(edges):
     This function takes a list of edges and creates a dictionary with the tuple of 2 concurrent nodes
     as the key and the number of reads mapping to that edge as the value. Tuples are sorted such that
     they are in ascending order. This means that the first node in the tuple is always the smaller node,
-    regardless of original orientation of the read.
+    regardless of original orientation of the read. This is for uniformity of the data as the list of
+    edges in the reference and homology arm paths are also created in the same fashion.
     :param edges:
     :return:
     """
     edge_list = []
     edge_dict = {}
     for nodes in edges:
-        # print(nodes)
-        # careful with 'node' and 'nodes' here
         if len(nodes) == 2:
             temp = (int(nodes[0]), int(nodes[1]))
             temp = sorted(temp)
             edge_list.append(tuple(temp))
         elif len(nodes) > 2:
-            for j in range(len(nodes)-1):
-                # print(nodes[j])
-                # temp = (int(nodes[i]), int(nodes[i+1]))
-                temp = (int(nodes[j]), int(nodes[j+1]))
+            for j in range(len(nodes) - 1):
+                temp = (int(nodes[j]), int(nodes[j + 1]))
                 temp = sorted(temp)
                 edge_list.append(tuple(temp))
-    # print(edge_list)
 
     for i in edge_list:
         if i in edge_dict:
@@ -237,37 +275,31 @@ def create_edge_dict(edges):
 
 
 read_edges = create_edge_dict(my_edges)
-# print(create_edge_dict([['28813', '28812', '28810', '28808', '28807', '28806', '28805']]))
-# print(len(create_edge_dict(my_edges)))
-
-# I have now created the dictionary of edges and the number of reads that map to each edge.
-# I now need to tally up the coverage counts of reference edges vs homology-only edges
-# for EACH homology arm.
-
-# print(ref_path)
-# print(hom_path)
 
 
-def reverse_dict_search(dictionary, value):
+def create_reverse_dict(dictionary):
     """
-    This function takes a dictionary and a value and returns a list of keys that have that value.
+    This function takes as input a dictionary where there the keys are nodes and the values are a list of paths.
+    The output is a dictionary where the keys are paths and the values are a list of nodes. This dictionary has far
+    fewer entries than the input dictionary, making it much more efficient to look up the nodes for a given path.
     :param dictionary:
-    :param value:
     :return:
     """
-    # return [k for k, v in dictionary.items() if v == value[n] for n in range(len(value))]
-    key = []
+    graph_dict = {}
     for k, v in dictionary.items():
-        if value in v:
-            key.append(k)
-    return key
+        if v is not None:
+            for x in v:
+                if x in graph_dict:
+                    graph_dict[x].append(k)
+                else:
+                    graph_dict[x] = [k]
+    return graph_dict
 
 
-print(f'{hom_path[619]}: {reverse_dict_search(node_dict, hom_path[619])}')
-# print(f'{ref_path[1]}: {reverse_dict_search(node_dict, [ref_path[1]])}')
-
-# Next step: write a function that iterates over each edge in each path (ref and homology) and tallies the number
-# of reads that map in each path.
+path_dict = create_reverse_dict(node_dict)
+# print(f"path_dict: {len(path_dict)}")
+# print(f"pan_path: {len(pan_path)}")
+# Notice how much smaller the search space for the keys is in the path_dict.
 
 
 def create_edges(path):
@@ -278,50 +310,160 @@ def create_edges(path):
     :return:
     """
     edges = []
-    for j in range(len(path) - 1):
-        temp = (int(path[j]), int(path[j + 1]))
-        temp = sorted(temp)
-        edges.append(tuple(temp))
+    if path is not None:
+        path = sorted(path)
+        for j in range(len(path) - 1):
+            temp = (int(path[j]), int(path[j + 1]))
+            temp = sorted(temp)
+            edges.append(tuple(temp))
 
     return edges
 
 
-# Reminder of where what data is. The names of the paths are in ref_path and hom_path. The actual paths are called
-# with reverse_dict_search(node_dict, [PATH[i]]). They then need to be made into edges with create_edges(). I can
-# then compare the edges of the paths to the edges that had reads mapped to them.
-
-def tally_reads_in_path(path, edge_dict):
-    read_tally = 0
-    graph_edges = create_edges(reverse_dict_search(node_dict, path))
-    for edge in graph_edges:
-        if edge in edge_dict:
-            read_tally += edge_dict[edge]
-    return read_tally
+shared_edges = create_edges(path_dict.get("shared"))
 
 
-total = 0
-for i in hom_path:
-    print(f'{i}: {tally_reads_in_path(i, read_edges)}')
-    total += tally_reads_in_path(i, read_edges)
-print(total)
+def create_edge_tally_dict(dictionary, paths):
+    """
+    This function takes a dictionary of edges {(node1, node2): number of reads} and a list of path names.
+    It then creates a dictionary that maps the path names to the number of edges in the path that had reads mapped
+    to them.
+    :param dictionary:
+    :param paths:
+    :return:
+    """
+    tally_dictionary = {}
+    for i in paths:
+        for j in i:
+            tally = 0
+            # print(f"{j}: {path_dict.get(j)}")
+            # print(f"path: {j}, tally: {create_edges(reverse_dict_search(node_dict, j))}")
+            # tally_dictionary[j] = len(create_edges(reverse_dict_search(node_dict, j)))
+            temp = create_edges(path_dict.get(j))
+            for k in temp:
+                if k not in shared_edges and dictionary.get(k) is not None:
+                    tally += dictionary.get(k)
+                # if dictionary.get(k) is not None:
+                #     tally += dictionary.get(k)
+            tally_dictionary[j] = tally
 
-# All the messy code below this is just for testing.
+    # print(len(tally_dictionary))
+    return tally_dictionary
 
-# for i in range(1, len(hom_path)):
-#     print(i)
-#     print(create_edges(reverse_dict_search(node_dict, [hom_path[i]])))
 
-print(create_edges(reverse_dict_search(node_dict, 'homology_arm_35412-')))
-print(tally_reads_in_path(hom_path[619], read_edges))
-#
-print(reverse_dict_search(node_dict, 'homology_arm_35412-'))
-# print(hom_path[812])
-print(get_path(38902))
-print(get_path(38903))
-print(get_path(38905))
-print(get_path(38906))
-print(get_path(38908))
-print(hom_path.index('homology_arm_35412-'))
-# Try to verify that the paths and edges are being created in the right way. The fact that a tally is returned
-# for the reference paths is a good sign that the paths are being created correctly. But why don't the homology
-# paths have ANY edges that have reads mapped to them?
+edge_tally = create_edge_tally_dict(read_edges, get_path_names(separate_paths(pan_path)))
+
+
+def tally_reads_in_path(path):
+    """
+    This function takes a path and returns the number of edges in the path that had reads mapped to them.
+    :param path:
+    :return:
+    """
+    return edge_tally[path]
+
+
+def get_tallies(paths):
+    """
+    This function takes a list of paths and a dictionary of edges and tallies the number of reads that mapped
+    to each path.
+    :param paths:
+    :return:
+    """
+    tally_count = 0
+    for i in paths:
+        # print(f'{i}: {tally_reads_in_path(i, edge_dict)}')
+        # print(f'{i}')
+
+        tally_count += tally_reads_in_path(i)
+    return tally_count
+
+
+# Next, make a table with the homology arm coverage and ref coverage for each homology arm.
+# I need to group the corresponding homology arm and ref-homology arm together.
+
+
+def num_edges(path):
+    """
+    This function takes a path and returns the number of edges in the path. It excludes edges that are shared between
+    the reference and the homology arm.
+    :param path:
+    :return:
+    """
+    temp = []
+    for i in create_edges(path_dict.get(path)):
+        if i not in shared_edges:
+            temp.append(i)
+    return len(temp)
+
+
+# print(f"{'homology_arm_34493+'}: {num_edges('homology_arm_34493+')}, "
+#       f"tally: {tally_reads_in_path('homology_arm_34664-')}, ")
+# print(f"{'homology_arm_34649-'}: {num_edges('homology_arm_34649-')},"
+#       f" tally: {tally_reads_in_path('homology_arm_34649-')}")
+
+# Verified this works correctly.
+
+
+def group_paths(paths):
+    """
+    This function takes a list of homology arm paths and groups the corresponding reference paths (over the
+    homology arm path range) together. If either the homology arm or the reference path is not found to have zero
+    edges, it is NOT grouped.
+    :param paths:
+    :return:
+    """
+    grouped_paths = []
+    # This list will be in the form: [homology_arm_path, ref_path]. Remember that the ref_path is a sub-path over the
+    # homology arm path's range.
+    for hpath in paths:
+        if num_edges(hpath) != 0 and num_edges(f"ref_{hpath}") != 0:
+            grouped_paths.append([hpath, num_edges(hpath), f"ref_{hpath}", num_edges(f"ref_{hpath}")])
+    return grouped_paths
+
+
+paths_for_coverage = group_paths(hom_path)
+
+
+def make_coverage_table(path_ids):
+    """
+    This function will take a list of path names and return a table of the coverage of each path.
+    Format of the table is to be decided.
+    :param path_ids:
+    :return:
+    """
+    coverage_list = []
+    # this list will be in the form: [[hom_arm_name, hom_arm_coverage, ref_subpath_coverage, #_of_hom_arm_edges,
+    # count_for_hom_arm, #_of_ref_subpath_edges, count_for_ref_subpath], [etc]]
+    for path in path_ids[1:]:
+        if path[1] != 0 and path[3] != 0:
+            coverage_list.append(
+                [path[0], tally_reads_in_path(path[0]) / path[1],
+                 tally_reads_in_path(path[2]) / path[3], path[1], tally_reads_in_path(path[0]),
+                 path[3], tally_reads_in_path(path[2])])
+
+    return coverage_list
+
+
+cov_list = make_coverage_table(paths_for_coverage)
+# The line below sorts the list by the homology arm coverage, making it easy to see which hom_arm has the highest
+# coverage.
+sorted_cov_list = sorted(cov_list, key=lambda row: row[1], reverse=True)
+
+
+def write_to_tsv(coverage_list):
+    """
+    This function will take a list of coverage data and write it to a tsv file.
+    """
+    with open(f"{name_for_output}.tsv", "wt") as tsv_file:
+        tsv_writer = csv.writer(tsv_file, delimiter='\t')
+        tsv_writer.writerow(["Homology arm", "Homology arm coverage", "Reference coverage", "Homology arm edges",
+                             "Count for homology arm", "Reference edges", "Count for reference"])
+        for i in coverage_list:
+            tsv_writer.writerow(i)
+
+
+# print(path_dict.get('homology_arm_34649-'))
+# print(path_dict.get('ref_homology_arm_34649-'))
+write_to_tsv(sorted_cov_list)
+print("Done!")

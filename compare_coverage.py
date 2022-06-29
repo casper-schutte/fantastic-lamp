@@ -5,6 +5,8 @@ import argparse
 # In order to use this script, you might need to run these two commands in the terminal:
 # env LD_PRELOAD=libjemalloc.so.2 PYTHONPATH=lib python3 -c 'import odgi'
 # export LD_PRELOAD=/lib/x86_64-linux-gnu/libjemalloc.so.2
+# export LD_PRELOAD=/home/ec2-user/.conda/pkgs/libjemalloc-5.2.1-h9c3ff4c_6/lib/l$
+
 
 # Put the path to the .og and .gfa files here:
 
@@ -16,8 +18,8 @@ def parse_args():
     parser.add_argument("--out-path", required=True)
     return parser.parse_args()
 
-args = parse_args()
 
+args = parse_args()
 
 gr = odgi.graph()
 gr.load(args.og_path)
@@ -122,29 +124,42 @@ def get_path_names(paths):
     h_arms = []
     ref_paths = []
     for path_name in paths:
-        if path_name.startswith("h"):
+        if path_name.startswith("hom"):
             h_arms.append(path_name)
-        else:
+        elif path_name.startswith("ref_h"):
             ref_paths.append(path_name)
     return h_arms, ref_paths
 
 
-hom_path, ref_path = get_path_names(separate_paths(pan_path))
-print(f"hom_path: {len(hom_path)}")
+hom_path, ref_hom_path = get_path_names(separate_paths(pan_path))
+# print(f"hom_path: {len(hom_path)}")
 # These are just lists of the path names for the homology arms and the reference.
 
 
 def create_node_dict(path):
     """
-    creates a dictionary with the node IDs as keys and the path names as values
+    creates a dictionary with the node IDs as keys and the path names as values. If it detects that a node is shared
+    between a homology-arm path and a corresponding reference-homology-arm path, it will add the path name "shared" to
+    the node in this dictionary.
     :param path:
     :return:
     """
     temp_dict = {}
+    # for i in path:
+    #     temp_dict[i[0]] = i[1]
     for i in path:
-        temp_dict[i[0]] = i[1]
-
-    # print(f"temp_dict: {len(temp_dict)}")
+        shared_score = 0
+        for j in i[1]:
+            if j.startswith("hom"):
+                shared_score += 1
+            if j.startswith("ref_h"):
+                shared_score += 1
+        if shared_score < 2:
+            temp_dict[i[0]] = i[1]
+        else:
+            i[1].append("shared")
+            temp_dict[i[0]] = i[1]
+    # print(temp_dict)
     return temp_dict
 
 
@@ -227,17 +242,18 @@ def create_reverse_dict(dictionary):
     """
     graph_dict = {}
     for k, v in dictionary.items():
-        for x in v:
-            if x in graph_dict:
-                graph_dict[x].append(k)
-            else:
-                graph_dict[x] = [k]
+        if v is not None:
+            for x in v:
+                if x in graph_dict:
+                    graph_dict[x].append(k)
+                else:
+                    graph_dict[x] = [k]
     return graph_dict
 
 
 path_dict = create_reverse_dict(node_dict)
-print(f"path_dict: {len(path_dict)}")
-print(f"pan_path: {len(pan_path)}")
+# print(f"path_dict: {len(path_dict)}")
+# print(f"pan_path: {len(pan_path)}")
 # Notice how much smaller the search space for the keys is in the path_dict.
 
 
@@ -249,13 +265,17 @@ def create_edges(path):
     :return:
     """
     edges = []
-    path = sorted(path)
-    for j in range(len(path) - 1):
-        temp = (int(path[j]), int(path[j + 1]))
-        temp = sorted(temp)
-        edges.append(tuple(temp))
+    if path is not None:
+        path = sorted(path)
+        for j in range(len(path) - 1):
+            temp = (int(path[j]), int(path[j + 1]))
+            temp = sorted(temp)
+            edges.append(tuple(temp))
 
     return edges
+
+
+shared_edges = create_edges(path_dict.get("shared"))
 
 
 def create_edge_tally_dict(dictionary, paths):
@@ -273,14 +293,12 @@ def create_edge_tally_dict(dictionary, paths):
             tally = 0
             # print(f"{j}: {path_dict.get(j)}")
             # print(f"path: {j}, tally: {create_edges(reverse_dict_search(node_dict, j))}")
-            # tally_dictionary[j] = len(create_edges(reverse_dict_search(node_dict, j)))
             temp = create_edges(path_dict.get(j))
             for k in temp:
-                if dictionary.get(k) is not None:
+                if k not in shared_edges and dictionary.get(k) is not None:
                     tally += dictionary.get(k)
             tally_dictionary[j] = tally
 
-    # print(len(tally_dictionary))
     return tally_dictionary
 
 
@@ -296,42 +314,22 @@ def tally_reads_in_path(path):
     return edge_tally[path]
 
 
-def get_tallies(paths):
-    """
-    This function takes a list of paths and a dictionary of edges and tallies the number of reads that mapped
-    to each path.
-    :param paths:
-    :return:
-    """
-    tally_count = 0
-    for i in paths:
-        # print(f'{i}: {tally_reads_in_path(i, edge_dict)}')
-        # print(f'{i}')
-
-        tally_count += tally_reads_in_path(i)
-    return tally_count
-
-
 # Next, make a table with the homology arm coverage and ref coverage for each homology arm.
 # I need to group the corresponding homology arm and ref-homology arm together.
 
 
 def num_edges(path):
     """
-    This function takes a path and returns the number of edges in the path.
+    This function takes a path and returns the number of edges in the path. It excludes edges that are shared between
+    the reference and the homology arm.
     :param path:
     :return:
     """
-
-    return len(create_edges(path_dict.get(path)))
-
-
-# print(f"{'homology_arm_34664-'}: {num_edges('homology_arm_34664-')}, "
-#       f"tally: {tally_reads_in_path('homology_arm_34664-')}, ")
-# print(f"{'homology_arm_34649-'}: {num_edges('homology_arm_34649-')},"
-#       f" tally: {tally_reads_in_path('homology_arm_34649-')}")
-
-# Verified this works correctly.
+    temp = []
+    for i in create_edges(path_dict.get(path)):
+        if i not in shared_edges:
+            temp.append(i)
+    return len(temp)
 
 
 def group_paths(paths):

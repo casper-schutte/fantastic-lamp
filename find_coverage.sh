@@ -3,13 +3,16 @@
 # The commands below are to ensure that odgi works correctly in the python script.
 env LD_PRELOAD=libjemalloc.so.2 PYTHONPATH=lib python3 -c 'import odgi'
 export LD_PRELOAD=/lib/x86_64-linux-gnu/libjemalloc.so.2
+#export LD_PRELOAD=/home/ec2-user/.conda/pkgs/libjemalloc-5.2.1-h9c3ff4c_6/lib/libjemalloc.so.2
+
 
 # This script requires as input:
 # 1) a design library csv file (DesignLibraryDetails_ODD126.csv)
-# 2) a reference genome (GCA_010356925.1_ASM1035692v1_genomic.fna)
+# 2) a reference genome with mtDNA sequence added (ref_and_mt.fna)
 # 3) the python script compare_coverage.py (in the same directory as this script)
 # 4) a text document (data_names.txt) containing the names of the files containing the reads, without the .fastq.gz
 # extension eg: "GE00001631-DOT_H11_S191_R2_001.fastq.gz" should be "GE00001631-DOT_H11_S191_R2_001"
+# 5) now also requires a fasta file containing the sequences of the plasmids used in the experiment.
 # The output is in the same folder as the original files,
 
 # 1) Make static graphs: (from commands.sh)
@@ -48,7 +51,7 @@ vg index -p -g yeast+edits.og.gfa.gcsa -t 16 yeast+edits.og.gfa.xg
 
 cat Data_names.txt | while read -r line; do
   vg map -x yeast+edits.og.gfa.xg -g yeast+edits.og.gfa.gcsa -t 16 -% -f "$line".fastq.gz | pv -l >"$line".gaf
-  python3 compare_coverage.py "$line".gaf "$line"
+  python3 compare_coverage.py --gaf-path "$line".gaf --out-path "$line" --og-path "yeast+edits.og"
 done
 
 echo "Done!"
