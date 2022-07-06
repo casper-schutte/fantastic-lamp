@@ -8,9 +8,6 @@ import argparse
 # export LD_PRELOAD=/home/ec2-user/.conda/pkgs/libjemalloc-5.2.1-h9c3ff4c_6/lib/l$
 
 
-# Put the path to the .og and .gfa files here:
-
-
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--og-path", required=True)
@@ -20,7 +17,6 @@ def parse_args():
 
 
 args = parse_args()
-
 gr = odgi.graph()
 gr.load(args.og_path)
 path_names = []
@@ -36,7 +32,7 @@ def step_str(step):
 
 
 all_path = []
-# The list "all_path" contains a list in the form of [node_id, path_name]
+# The list "all_path" contains a list in the form of [node_id, path_names]
 
 
 def show_steps(handle):
@@ -47,7 +43,7 @@ def show_steps(handle):
     ])
 
 
-# Everything above this line was borrowed and slightly adapted from the odgi tutorial on GitHub
+# Most everything above this line was borrowed and slightly adapted from the odgi tutorial on GitHub
 gr.for_each_handle(show_steps)
 
 
@@ -55,8 +51,8 @@ def read_gaf(gaf_file_name):
     """
     This function takes a gaf file and returns a list of the nodes that reads in the
     file were mapped to.
-    :param gaf_file_name:
-    :return:
+    :param: gaf_file_name
+    :return: list of nodes
     """
     nodes = []
     for row in open(gaf_file_name):
@@ -69,18 +65,14 @@ def read_gaf(gaf_file_name):
 
 
 gaf_nodes = read_gaf(args.gaf_path)
-# The code below names the columns in the gaf file, in case you want to use more than just the nodes that
-# had reads mapped to them.
-# specify headers: headers = ["q_name", "q_len", "q_start", "q_end", "rel_orient", "path", "path_len", "path_start",
-# "path_end", "res_matches", "aln_block_len", "mapq"]
 
 
 def make_paths(path):
     """
     This function separates the names of the paths.
     In the input, the names are in one string, separated by spaces.
-    :param path:
-    :return:
+    :param: path
+    :return: list of paths
     """
     my_list = []
     for i in path:
@@ -89,7 +81,6 @@ def make_paths(path):
 
 
 pan_path = make_paths(all_path)
-# print(sorted(pan_path))
 # The list "pan_path" contains lists in the form of [node_id, [path_name, path_name, ...]]
 
 
@@ -109,7 +100,6 @@ def separate_paths(paths):
         else:
             if x[1][0] not in sep_path_names:
                 sep_path_names.append(x[1][0])
-    # print(f"sep_path_names: {sep_path_names}")
     return sep_path_names
 
 
@@ -132,8 +122,7 @@ def get_path_names(paths):
 
 
 hom_path, ref_hom_path = get_path_names(separate_paths(pan_path))
-# print(f"hom_path: {len(hom_path)}")
-# These are just lists of the path names for the homology arms and the reference.
+# These are just lists of the path names for the homology arms and the reference homology arms.
 
 
 def create_node_dict(path):
@@ -145,8 +134,6 @@ def create_node_dict(path):
     :return:
     """
     temp_dict = {}
-    # for i in path:
-    #     temp_dict[i[0]] = i[1]
     for i in path:
         shared_score = 0
         for j in i[1]:
@@ -159,8 +146,8 @@ def create_node_dict(path):
         else:
             i[1].append("shared")
             temp_dict[i[0]] = i[1]
-    # print(temp_dict)
     return temp_dict
+# Need to investigate the efficiency of this function/method of separating the shared and unshared paths.
 
 
 node_dict = create_node_dict(pan_path)
@@ -180,7 +167,7 @@ def get_path(node):
 def find_legit_edges(reads):
     """
     This function takes a list of nodes to which reads mapped (from the GAF file)
-    and picks out the relevant edges (only reads that map to more than one node, for now).
+    and picks out the relevant edges (only reads that map to more than one node).
     The dictionary with the edges still needs to be created in a subsequent step.
     :param reads:
     :return:
@@ -188,7 +175,8 @@ def find_legit_edges(reads):
     con_nodes = []
     for x in reads:
         if x.count('<') > 1 or x.count('>') > 1:
-            x = x.replace('<', '>')  # This makes it easier to split the string.
+            x = x.replace('<', '>')
+            # This makes it easier to split the string.
             # This is something that could change if we are interested in the orientation of the reads.
             con_nodes.append(x[1:].split('>'))
             # The [1:] above takes away the leading empty string that is left behind by the split function.
@@ -252,9 +240,6 @@ def create_reverse_dict(dictionary):
 
 
 path_dict = create_reverse_dict(node_dict)
-# print(f"path_dict: {len(path_dict)}")
-# print(f"pan_path: {len(pan_path)}")
-# Notice how much smaller the search space for the keys is in the path_dict.
 
 
 def create_edges(path):
@@ -291,8 +276,6 @@ def create_edge_tally_dict(dictionary, paths):
     for i in paths:
         for j in i:
             tally = 0
-            # print(f"{j}: {path_dict.get(j)}")
-            # print(f"path: {j}, tally: {create_edges(reverse_dict_search(node_dict, j))}")
             temp = create_edges(path_dict.get(j))
             for k in temp:
                 if k not in shared_edges and dictionary.get(k) is not None:
@@ -314,10 +297,6 @@ def tally_reads_in_path(path):
     return edge_tally[path]
 
 
-# Next, make a table with the homology arm coverage and ref coverage for each homology arm.
-# I need to group the corresponding homology arm and ref-homology arm together.
-
-
 def num_edges(path):
     """
     This function takes a path and returns the number of edges in the path. It excludes edges that are shared between
@@ -336,13 +315,11 @@ def group_paths(paths):
     """
     This function takes a list of homology arm paths and groups the corresponding reference paths (over the
     homology arm path range) together. If either the homology arm or the reference path is not found to have zero
-    edges, it is NOT grouped.
+    edges, it is NOT grouped. The list is in the form [homology arm path, reference path].
     :param paths:
     :return:
     """
     grouped_paths = []
-    # This list will be in the form: [homology_arm_path, ref_path]. Remember that the ref_path is a sub-path over the
-    # homology arm path's range.
     for hpath in paths:
         if num_edges(hpath) != 0 and num_edges(f"ref_{hpath}") != 0:
             grouped_paths.append([hpath, num_edges(hpath), f"ref_{hpath}", num_edges(f"ref_{hpath}")])
