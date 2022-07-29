@@ -269,14 +269,13 @@ def create_shared_edges(hpaths):
     that are shared between the two paths. This new list can be checked against to exclude shared edges further down
     the line.
     """
-    counter = 1
     for i in hpaths[1:]:
         ref_edges = create_edges(path_dict.get(f"ref_{i}"))
         h_edges = create_edges(path_dict.get(i))
         for j in h_edges:
             if j in ref_edges:
                 shared_edges.append(j)
-        counter += 1
+
 
 
 create_shared_edges(hom_path)
