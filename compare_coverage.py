@@ -144,7 +144,7 @@ def create_node_dict(path):
         if shared_score < 2:
             temp_dict[i[0]] = i[1]
         else:
-            i[1].append("shared")
+            # i[1].append("shared")
             temp_dict[i[0]] = i[1]
     return temp_dict
 # Need to investigate the efficiency of this function/method of separating the shared and unshared paths.
@@ -260,7 +260,26 @@ def create_edges(path):
     return edges
 
 
-shared_edges = create_edges(path_dict.get("shared"))
+shared_edges = []
+
+
+def create_shared_edges(hpaths):
+    """
+    This function takes each homology arm, and it's corresponding reference homology arm, and creates a list of edges
+    that are shared between the two paths. This new list can be checked against to exclude shared edges further down
+    the line.
+    """
+    counter = 1
+    for i in hpaths[1:]:
+        ref_edges = create_edges(path_dict.get(f"ref_{i}"))
+        h_edges = create_edges(path_dict.get(i))
+        for j in h_edges:
+            if j in ref_edges:
+                shared_edges.append(j)
+        counter += 1
+
+
+create_shared_edges(hom_path)
 
 
 def create_edge_tally_dict(dictionary, paths):
@@ -281,7 +300,6 @@ def create_edge_tally_dict(dictionary, paths):
                 if k not in shared_edges and dictionary.get(k) is not None:
                     tally += dictionary.get(k)
             tally_dictionary[j] = tally
-
     return tally_dictionary
 
 
