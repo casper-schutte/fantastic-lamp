@@ -21,8 +21,8 @@ export LD_PRELOAD=/lib/x86_64-linux-gnu/libjemalloc.so.2
 # in column BA, the 53rd column, and the corresponding homology_arm edit sequence is in column 54.
 # Note for future use: can if the design library is different, create a new variable containing the appropriate column
 # numbers.
-cat DesignLibraryDetails_ODD126.csv | awk -F',' '{print ">homology_arm_"$1; print $54;}' | tr -d \- > ODD126_homology_arms.fa
-cat DesignLibraryDetails_ODD126.csv | awk -F',' '{print ">ref_homology_arm_"$1; print $53;}' | tr -d \- > ref_subpaths.fa
+cat DesignLibraryDetails_ODD126.withEditWindow.csv | awk -F',' '{print ">homology_arm_"$1; print $54;}' | tr -d \- > ODD126_homology_arms.fa
+cat DesignLibraryDetails_ODD126.withEditWindow.csv | awk -F',' '{print ">ref_homology_arm_"$1; print $53;}' | tr -d \- > ref_subpaths.fa
 
 # Combine homology arms and reference over the range of the homology arms into one FASTA file.
 cat ref_subpaths.fa ODD126_homology_arms.fa > ODD126_ref_and_hom_arms.fa
@@ -51,7 +51,7 @@ vg index -p -g yeast+edits.og.gfa.gcsa -t 16 yeast+edits.og.gfa.xg
 
 cat Data_names.txt | while read -r line; do
   vg map -x yeast+edits.og.gfa.xg -g yeast+edits.og.gfa.gcsa -t 16 -% -f "$line".fastq.gz | pv -l >"$line".gaf
-  python3 compare_coverage.py --gaf-path "$line".gaf --out-path "$line" --og-path "yeast+edits.og"
+  python3 compare_coverage.py --gaf-path "$line".gaf --out-path "$line".tsv --og-path "yeast+edits.og"
 done
 
 echo "Done!"
