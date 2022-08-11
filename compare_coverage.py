@@ -2,6 +2,7 @@ import odgi
 import csv
 import argparse
 
+
 # In order to use this script, you might need to run these two commands in the terminal:
 # env LD_PRELOAD=libjemalloc.so.2 PYTHONPATH=lib python3 -c 'import odgi'
 # export LD_PRELOAD=/lib/x86_64-linux-gnu/libjemalloc.so.2
@@ -32,6 +33,8 @@ def step_str(step):
 
 
 all_path = []
+
+
 # The list "all_path" contains a list in the form of [node_id, path_names]
 
 
@@ -81,6 +84,8 @@ def make_paths(path):
 
 
 pan_path = make_paths(all_path)
+
+
 # The list "pan_path" contains lists in the form of [node_id, [path_name, path_name, ...]]
 
 
@@ -122,6 +127,8 @@ def get_path_names(paths):
 
 
 hom_path, ref_hom_path = get_path_names(separate_paths(pan_path))
+
+
 # These are just lists of the path names for the homology arms and the reference homology arms.
 
 
@@ -147,10 +154,14 @@ def create_node_dict(path):
             # i[1].append("shared")
             temp_dict[i[0]] = i[1]
     return temp_dict
+
+
 # Need to investigate the efficiency of this function/method of separating the shared and unshared paths.
 
 
 node_dict = create_node_dict(pan_path)
+
+
 # This dictionary can be used to look up the path names for a given node.
 
 
@@ -275,7 +286,6 @@ def create_shared_edges(hpaths):
         for j in h_edges:
             if j in ref_edges:
                 shared_edges.append(j)
-
 
 
 create_shared_edges(hom_path)

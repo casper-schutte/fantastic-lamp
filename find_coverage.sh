@@ -11,7 +11,7 @@ export LD_PRELOAD=/lib/x86_64-linux-gnu/libjemalloc.so.2
 # 2) a reference genome with mtDNA sequence added (ref_and_mt.fna)
 # 3) the python script compare_coverage.py (in the same directory as this script)
 # 4) a text document (data_names.txt) containing the names of the files containing the reads, without the .fastq.gz
-# extension eg: "GE00001631-DOT_H11_S191_R2_001.fastq.gz" should be "GE00001631-DOT_H11_S191_R2_001"
+# extension eg: "GE00001631-DOT_H11_S191_R2_001.fastq.gz" should be "GE00001631-DOT_H11_S191_R"
 # 5) now also requires a fasta file containing the sequences of the plasmids used in the experiment.
 # The output is in the same folder as the original files,
 
@@ -50,7 +50,7 @@ vg index -p -g yeast+edits.og.gfa.gcsa -t 16 yeast+edits.og.gfa.xg
 # 2) Make GAF files and run python script for each data set:
 
 cat Data_names.txt | while read -r line; do
-  vg map -x yeast+edits.og.gfa.xg -g yeast+edits.og.gfa.gcsa -t 16 -% -f "$line".fastq.gz | pv -l >"$line".gaf
+  vg map -x yeast+edits.og.gfa.xg -g yeast+edits.og.gfa.gcsa -t 16 -% -f "$line"1_001.fastq.gz -f "$line"2_001.fastq.gz| pv -l >"$line".gaf
   python3 compare_coverage.py --gaf-path "$line".gaf --out-path "$line".tsv --og-path "yeast+edits.og"
 done
 
