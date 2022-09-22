@@ -14,6 +14,7 @@ def parse_args():
     parser.add_argument("--og-path", required=True)
     parser.add_argument("--gaf-path", required=True)
     parser.add_argument("--out-path", required=True)
+    parser.add_argument("--info-path", required=False)
     return parser.parse_args()
 
 
@@ -60,8 +61,8 @@ def read_gaf(gaf_file_name):
     nodes = []
     for row in open(gaf_file_name):
         row = row.split()
-        qual = int(row[11])
-        if qual < 30:
+        mapq = int(row[11])
+        if mapq < 30:
             continue
         nodes.append(row[5])
     return nodes
@@ -280,15 +281,20 @@ def create_shared_edges(hpaths):
     that are shared between the two paths. This new list can be checked against to exclude shared edges further down
     the line.
     """
+    counter = 0
+    ref_edges = []
+    h_edges = []
     for i in hpaths[1:]:
-        ref_edges = create_edges(path_dict.get(f"ref_{i}"))
-        h_edges = create_edges(path_dict.get(i))
-        for j in h_edges:
-            if j in ref_edges:
+        ref_edges.append(create_edges(path_dict.get(f"ref_{i}")))
+        h_edges.append(create_edges(path_dict.get(i)))
+        for j in h_edges[counter]:
+            if j in ref_edges[counter]:
                 shared_edges.append(j)
+        counter += 1
 
 
 create_shared_edges(hom_path)
+# print(shared_edges)
 
 
 def create_edge_tally_dict(dictionary, paths):

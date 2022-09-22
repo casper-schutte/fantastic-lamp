@@ -50,7 +50,7 @@ def show_steps(handle):
 # Most everything above this line was borrowed and slightly adapted from the odgi tutorial on GitHub
 gr.for_each_handle(show_steps)
 
-read_info = {}
+# read_info = {}
 
 
 def read_gaf(gaf_file_name):
@@ -65,25 +65,17 @@ def read_gaf(gaf_file_name):
         for row in f:
             row = row.split()
             qual = int(row[11])
-            name = row[0]
             path = row[5]
             if qual < 30:
                 continue
             nodes.append(path)
-            if path.count(">") > 1 or path.count("<") > 1:
-                if f"{name}A" in read_info.keys():
-                    read_info[f"{name}B"] = path
-                else:
-                    read_info[f"{name}A"] = path
 
     return nodes
 
 
 gaf_nodes = read_gaf(args.gaf_path)
 # print(read_info.keys())
-print(f'NB502113:716:HMH2GBGXK:1:12203:19905:11061A:{read_info.get("NB502113:716:HMH2GBGXK:1:12203:19905:11061A")}')
-print(f'NB502113:716:HMH2GBGXK:1:12203:19905:11061B:{read_info.get("NB502113:716:HMH2GBGXK:1:12203:19905:11061B")}')
-print(len(read_info))
+
 # print(read_info.get("NB552468:203:HTF2WBGXK:3:13407:16514:19264B"))
 
 
@@ -341,14 +333,23 @@ def read_name_dict():
     It doesn't. It maps edges (keys) to read names (values)
     :return:
     """
-    my_info = {}
-    for key, value in read_info.items():
-        if value.count('<') > 1 or value.count('>') > 1:
-            # temp1 = create_edges(find_legit_edges([value])[0])
-            my_info[key] = create_edges(find_legit_edges([value])[0])
+    read_info = {}
+    with open(args.gaf_path) as f:
+        for row in f:
+            row = row.split()
+            qual = int(row[11])
+            name = row[0]
+            path = row[5]
+            if qual < 30:
+                continue
+            if path.count(">") > 1 or path.count("<") > 1:
+                if f"{name}A" in read_info.keys():
+                    read_info[f"{name}B"] = create_edges(find_legit_edges([path])[0])
+                else:
+                    read_info[f"{name}A"] = create_edges(find_legit_edges([path])[0])
 
     new_dict = {}
-    for k, v in my_info.items():
+    for k, v in read_info.items():
         if v is not None:
             for x in v:
                 if x not in shared_edges:
@@ -359,13 +360,18 @@ def read_name_dict():
                 else:
                     if x not in new_dict:
                         new_dict[x] = None
+    print(f'NB502113:716:HMH2GBGXK:1:12203:19905:11061A:{read_info.get("NB502113:716:HMH2GBGXK:1:12203:19905:11061A")}')
+    print(f'NB502113:716:HMH2GBGXK:1:12203:19905:11061B:{read_info.get("NB502113:716:HMH2GBGXK:1:12203:19905:11061B")}')
     return new_dict
 
 
 read_dict = read_name_dict()
 
+print(len(read_dict))
 
-print(read_dict.get((13054, 13055)))
+
+
+# print(read_dict.get((13054, 13055)))
 #
 # for i in create_edges(path_dict.get(hom_path[4])):
 #     print(i)
@@ -417,7 +423,7 @@ def group_paths(paths):
                 if read_dict.get(i) is not None:
                     for j in read_dict.get(i):
                         if j not in temp2[1] and j not in shared_edges:
-                            temp2[-1].append(j)
+                            temp2[1].append(j)
             read_table[temp2[0]] = temp2[1]
             ref_edges = create_edges(path_dict.get(f"ref_{hpath}"))
             temp3 = [f"ref_{hpath}", []]
@@ -425,9 +431,9 @@ def group_paths(paths):
                 if read_dict.get(i) is not None:
                     for j in read_dict.get(i):
                         if j not in temp3[1] and j not in shared_edges:
-                            temp3[-1].append(j)
+                            temp3[1].append(j)
             read_table[temp3[0]] = temp3[1]
-
+    # print(read_table)
     return grouped_paths
 
 
