@@ -26,5 +26,5 @@ jobs:
           conda env update --file environment.yaml --name base
 
       - name: test script
-        run: find_coverage_test.sh
+        run: bash find_coverage_test.sh
         shell: bash
