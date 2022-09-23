@@ -23,7 +23,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          conda env update --file environment.yml --name base
+          conda env update --file environment.yaml --name base
 
       - name: test script
         run: find_coverage_test.sh
