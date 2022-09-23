@@ -21,14 +21,14 @@ export LD_PRELOAD=/lib/x86_64-linux-gnu/libjemalloc.so.2
 # in column BA, the 53rd column, and the corresponding homology_arm edit sequence is in column 54.
 # Note for future use: can if the design library is different, create a new variable containing the appropriate column
 # numbers.
-cat DesignLibraryDetails_ODD126.withEditWindow.csv | awk -F',' '{print ">homology_arm_"$1; print $54;}' | tr -d \- > ODD126_homology_arms.fa
-cat DesignLibraryDetails_ODD126.withEditWindow.csv | awk -F',' '{print ">ref_homology_arm_"$1; print $53;}' | tr -d \- > ref_subpaths.fa
+cat hom_arms_test.fa > ODD126_homology_arms.fa
+cat ref_arms_test.fa  > ref_subpaths.fa
 
 # Combine homology arms and reference over the range of the homology arms into one FASTA file.
 cat ref_subpaths.fa ODD126_homology_arms.fa > ODD126_ref_and_hom_arms.fa
 
 # map the homology arms against the reference
-minimap2 -k 19 -w 1 -cx sr ref_and_mt.fna ODD126_ref_and_hom_arms.fa >ODD126_ref_and_hom_arms.paf
+minimap2 -k 19 -w 1 -cx sr tiny_genome.fa ODD126_ref_and_hom_arms.fa >ODD126_ref_and_hom_arms.paf
 
 # combine the inputs to seqwish in a single file (and add plasmid sequences)
 cat ref_and_mt.fna ODD126_ref_and_hom_arms.fa ODD126_augmented_CB39.fasta >yeast+edits.fa
