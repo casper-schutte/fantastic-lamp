@@ -29,6 +29,7 @@ jobs:
         run: cd Test
         shell: bash
       
+      - uses: actions/checkout@v3
       - name: test script
         run: bash Test/find_coverage_test.sh
         shell: bash
