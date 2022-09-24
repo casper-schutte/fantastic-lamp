@@ -31,7 +31,7 @@ cat ref_subpaths.fa ODD126_homology_arms.fa > ODD126_ref_and_hom_arms.fa
 minimap2 -k 19 -w 1 -cx sr tiny_genome.fa ODD126_ref_and_hom_arms.fa >ODD126_ref_and_hom_arms.paf
 
 # combine the inputs to seqwish in a single file (and add plasmid sequences)
-cat ref_and_mt.fna ODD126_ref_and_hom_arms.fa ODD126_augmented_CB39.fasta >yeast+edits.fa
+cat tiny_genome.fa ODD126_ref_and_hom_arms.fa >yeast+edits.fa
 
 # induce the variation graph
 seqwish -g yeast+edits.gfa -s yeast+edits.fa -p ODD126_ref_and_hom_arms.paf -P
