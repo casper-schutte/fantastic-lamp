@@ -33,3 +33,4 @@ jobs:
       - name: test script
         run: bash find_coverage_test.sh
         shell: bash
+        working-directory: Test
