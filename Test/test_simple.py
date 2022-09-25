@@ -8,8 +8,8 @@ result = args.r
 exp_result = args.e
 
 if __name__ == "__main__":
-    # print(f"expected: {args.e}")
-    # print(f"result: {args.r}")
+    print(f"expected: {args.e}")
+    print(f"result: {args.r}")
     assert result == exp_result
     print("Tests passed!")
 
