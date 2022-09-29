@@ -1,2 +1,1 @@
-*   text=auto
-*.tsv   text=auto
+*.*   text eol=lf
