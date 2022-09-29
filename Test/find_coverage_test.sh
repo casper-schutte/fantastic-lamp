@@ -59,6 +59,8 @@ result=$(head simple_test.tsv)
 # shellcheck disable=SC2046
 # shellcheck disable=SC2005
 echo $(diff example_simple_test.tsv simple_test.tsv)
+echo $(file example_simple_test.tsv)
+echo $(file result.tsv)
 #exp_result=$(cat example_simple_test.tsv)
 #result=$(cat simple_test.tsv)
 
