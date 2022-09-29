@@ -10,6 +10,12 @@ jobs:
   run-script:
     runs-on: ubuntu-latest
     steps:
+      - name: Set git to use LF
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.eol lf
+
+      - uses: actions/checkout@v2
       - uses: actions/checkout@v3
       
       - name: Set up Python 3.10
@@ -35,3 +41,4 @@ jobs:
         shell: bash
         working-directory: Test
         continue-on-error: False
+
