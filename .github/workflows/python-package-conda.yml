@@ -34,3 +34,4 @@ jobs:
         run: nice bash find_coverage_test.sh
         shell: bash
         working-directory: Test
+        continue-on-error: False
