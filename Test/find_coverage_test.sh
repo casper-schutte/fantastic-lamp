@@ -52,16 +52,16 @@ vg index -p -g yeast+edits.og.gfa.gcsa -t 16 yeast+edits.og.gfa.xg
 vg map -x yeast+edits.og.gfa.xg -g yeast+edits.og.gfa.gcsa -t 16 -% -f "simple_test".fastq.gz | pv -l >"simple_test".gaf
 python3 compare_coverage.py --gaf-path "simple_test".gaf --out-path "simple_test".tsv --og-path "yeast+edits.og"
 
-exp_result=$(head example_simple_test.tsv)
+exp_result=$(head expected_simple_test.tsv)
 result=$(head simple_test.tsv)
 
 
 # shellcheck disable=SC2046
 # shellcheck disable=SC2005
-echo $(diff example_simple_test.tsv simple_test.tsv)
-echo $(file example_simple_test.tsv)
+echo $(diff expected_simple_test.tsv simple_test.tsv)
+echo $(file expected_simple_test.tsv)
 echo $(file simple_test.tsv)
-#exp_result=$(cat example_simple_test.tsv)
+#exp_result=$(cat expected_simple_test.tsv)
 #result=$(cat simple_test.tsv)
 
 python3 test_simple.py --e "$exp_result" --r "$result"
