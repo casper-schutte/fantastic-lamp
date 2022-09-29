@@ -1,1 +1,1 @@
-*.tsv   text eol=crlf
+*.tsv   text eol=lf
