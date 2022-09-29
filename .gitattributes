@@ -1,2 +1,2 @@
-*   text=auto
-*.tsv   text=auto
+#*   text=auto
+#*.tsv   text=auto
