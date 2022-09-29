@@ -488,7 +488,7 @@ def write_to_tsv(coverage_list):
 
     with open("my_read_info.tsv", "wt") as tsv_file:
         fieldnames = ["Reads", "Homology arm"]
-        tsv_writer = csv.DictWriter(tsv_file, fieldnames=fieldnames, delimiter='\t')
+        tsv_writer = csv.DictWriter(tsv_file, fieldnames=fieldnames, delimiter='\t', lineterminator='\n')
         tsv_writer.writeheader()
         for i in read_table:
             for j in read_table[i]:
