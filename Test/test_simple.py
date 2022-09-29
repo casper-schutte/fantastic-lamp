@@ -8,6 +8,12 @@ args = parser.parse_args()
 result = args.r
 exp_result = args.e
 
+
+def run_test():
+    assert result == exp_result
+    # assert exp_hashed == result_hashed
+
+
 if __name__ == "__main__":
     # print(f"expected: {args.e}")
     # print(f"result: {args.r}")
@@ -15,8 +21,7 @@ if __name__ == "__main__":
     result_hashed = hashlib.sha256(result.encode('utf-8')).hexdigest()
     print(f"expected: {hashlib.sha256(exp_result.encode('utf-8')).hexdigest()}")
     print(f"result: {hashlib.sha256(result.encode('utf-8')).hexdigest()}")
-    assert result == exp_result
-    assert exp_hashed == result_hashed
+    run_test()
     print("Tests passed!")
 
 # This is a test push
