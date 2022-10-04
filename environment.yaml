@@ -12,3 +12,4 @@ dependencies:
   - pandas
   - pv
   - libjemalloc
+  - pytest
