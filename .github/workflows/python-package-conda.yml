@@ -37,13 +37,13 @@ jobs:
 
       - uses: actions/checkout@v3
       - name: test script
-        run: nice bash find_coverage_test.sh
+        run: |
+          nice bash find_coverage_test.sh
+          pytest
         shell: bash
         working-directory: Test
-      - name: Use Pytest
-        run: |
-          pytest
-        working-directory: Test
+
+
 
         
 
