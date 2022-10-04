@@ -65,6 +65,6 @@ echo $(file simple_test.tsv)
 #result=$(cat simple_test.tsv)
 
 #python3 test_simple.py --e "$exp_result" --r "$result"
-pytest test_simple.py
+#pytest test_simple.py
 
 echo "Done!"
