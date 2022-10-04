@@ -39,7 +39,6 @@ jobs:
       - name: test script
         run: |
           nice bash find_coverage_test.sh
-          pytest
         shell: bash
         working-directory: Test
 
