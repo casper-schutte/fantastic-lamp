@@ -1,0 +1,48 @@
+name: simple-test
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set git to use LF
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.eol lf
+
+      - uses: actions/checkout@v3
+      
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+
+      - name: Add conda to system path
+        run: |
+          echo $CONDA/bin >> $GITHUB_PATH
+
+      - name: Install dependencies
+        run: |
+          conda env update --file environment.yaml --name base
+          pip install pytest
+          
+      - name: cd
+        run: cd Test
+        shell: bash
+
+      - uses: actions/checkout@v3
+      - name: test script
+        run: |
+          nice bash find_coverage_test.sh
+        shell: bash
+        working-directory: Test
+
+
+
+        
+
