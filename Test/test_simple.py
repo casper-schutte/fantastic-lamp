@@ -1,15 +1,4 @@
-import argparse
 import hashlib
-import sys
-
-import pytest
-
-#parser = argparse.ArgumentParser()
-#parser.add_argument("--e", required=True)
-#parser.add_argument("--r", required=True)
-#rgs = parser.parse_args()
-#result = args.r
-#exp_result = args.e
 
 
 def get_files():
@@ -22,7 +11,6 @@ def get_files():
 
 def test_answer():
     assert result == exp_result
-    # assert exp_hashed == result_hashed
 
 
 result, exp_result = get_files()
@@ -30,14 +18,6 @@ exp_hashed = hashlib.sha256(exp_result.encode('utf-8')).hexdigest()
 result_hashed = hashlib.sha256(result.encode('utf-8')).hexdigest()
 print(f"expected: {hashlib.sha256(exp_result.encode('utf-8')).hexdigest()}")
 print(f"result: {hashlib.sha256(result.encode('utf-8')).hexdigest()}")
-mark = test_answer()
-# if mark is not True:
-#     sys.exit()
+test_answer()
+
 print("Tests passed!")
-
-# if __name__ == "__main__":
-#     # print(f"expected: {args.e}")
-#     # print(f"result: {args.r}")
-#
-
-# This is a test push
