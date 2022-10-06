@@ -58,8 +58,11 @@ result=$(head simple_test.tsv)
 #result=$(cat simple_test.tsv)
 
 
-#python3 test_simple.py --e "$exp_result" --r "$result"
+# The line below runs pytest, the test file opens the expected result and the test result and compares them.
 pytest
+
+# The lines below run the test with bash-tap, it compares the expected output with the test output directly in the
+# bash script. I has not been set up to run via GitHub Actions yet.
 #cd ./t || exit
 #bash prove test_bashtap.t
 
