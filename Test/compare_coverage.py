@@ -3,12 +3,6 @@ import csv
 import argparse
 
 
-# In order to use this script, you might need to run these two commands in the terminal:
-# env LD_PRELOAD=libjemalloc.so.2 PYTHONPATH=lib python3 -c 'import odgi'
-# export LD_PRELOAD=/lib/x86_64-linux-gnu/libjemalloc.so.2
-# export LD_PRELOAD=/home/ec2-user/.conda/pkgs/libjemalloc-5.2.1-h9c3ff4c_6/lib/l$
-
-
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--og-path", required=True)
@@ -34,22 +28,12 @@ def step_str(step):
     return path_str + dir_str
 
 
-all_path = []
-
-
-# The list "all_path" contains a list in the form of [node_id, path_names]
-
-
 def show_steps(handle):
     steps = []
     gr.for_each_step_on_handle(handle, lambda step: steps.append(step))
     all_path.append([
         gr.get_id(handle), " ".join([step_str(s) for s in steps])
     ])
-
-
-# Most everything above this line was borrowed and slightly adapted from the odgi tutorial on GitHub
-gr.for_each_handle(show_steps)
 
 
 def read_gaf(gaf_file_name):
@@ -69,9 +53,6 @@ def read_gaf(gaf_file_name):
     return nodes
 
 
-gaf_nodes = read_gaf(args.gaf_path)
-
-
 def make_paths(path):
     """
     This function separates the names of the paths.
@@ -83,12 +64,6 @@ def make_paths(path):
     for i in path:
         my_list.append([i[0], i[1].split(" ")])
     return my_list
-
-
-pan_path = make_paths(all_path)
-
-
-# The list "pan_path" contains lists in the form of [node_id, [path_name, path_name, ...]]
 
 
 def separate_paths(paths):
@@ -128,12 +103,6 @@ def get_path_names(paths):
     return h_arms, ref_paths
 
 
-hom_path, ref_hom_path = get_path_names(separate_paths(pan_path))
-
-
-# These are just lists of the path names for the homology arms and the reference homology arms.
-
-
 def create_node_dict(path):
     """
     creates a dictionary with the node IDs as keys and the path names as values. If it detects that a node is shared
@@ -156,15 +125,6 @@ def create_node_dict(path):
             # i[1].append("shared")
             temp_dict[i[0]] = i[1]
     return temp_dict
-
-
-# Need to investigate the efficiency of this function/method of separating the shared and unshared paths.
-
-
-node_dict = create_node_dict(pan_path)
-
-
-# This dictionary can be used to look up the path names for a given node.
 
 
 def get_path(node):
@@ -194,9 +154,6 @@ def find_legit_edges(reads):
             con_nodes.append(x[1:].split('>'))
             # The [1:] above takes away the leading empty string that is left behind by the split function.
     return con_nodes
-
-
-my_edges = find_legit_edges(gaf_nodes)
 
 
 def create_edge_dict(edges):
@@ -230,9 +187,6 @@ def create_edge_dict(edges):
     return edge_dict
 
 
-read_edges = create_edge_dict(my_edges)
-
-
 def create_reverse_dict(dictionary):
     """
     This function takes as input a dictionary where there the keys are nodes and the values are a list of paths.
@@ -250,9 +204,6 @@ def create_reverse_dict(dictionary):
                 else:
                     graph_dict[x] = [k]
     return graph_dict
-
-
-path_dict = create_reverse_dict(node_dict)
 
 
 def create_edges(path):
@@ -273,9 +224,6 @@ def create_edges(path):
     return edges
 
 
-shared_edges = []
-
-
 def create_shared_edges(hpaths):
     """
     This function takes each homology arm, and it's corresponding reference homology arm, and creates a list of edges
@@ -292,10 +240,6 @@ def create_shared_edges(hpaths):
             if j in ref_edges[counter]:
                 shared_edges.append(j)
         counter += 1
-
-
-create_shared_edges(hom_path)
-# print(shared_edges)
 
 
 def create_edge_tally_dict(dictionary, paths):
@@ -317,9 +261,6 @@ def create_edge_tally_dict(dictionary, paths):
                     tally += dictionary.get(k)
             tally_dictionary[j] = tally
     return tally_dictionary
-
-
-edge_tally = create_edge_tally_dict(read_edges, get_path_names(separate_paths(pan_path)))
 
 
 def tally_reads_in_path(path):
@@ -360,9 +301,6 @@ def group_paths(paths):
     return grouped_paths
 
 
-paths_for_coverage = group_paths(hom_path)
-
-
 def make_coverage_table(path_ids):
     """
     This function will take a list of path names and return a table of the coverage of each path.
@@ -382,13 +320,6 @@ def make_coverage_table(path_ids):
     return coverage_list
 
 
-cov_list = make_coverage_table(paths_for_coverage)
-# The line below sorts the list by the homology arm coverage, making it easy to see which hom_arm has the highest
-# coverage.
-sorted_cov_list = sorted(cov_list, key=lambda row: row[1], reverse=True)
-#print(sorted_cov_list[:10])
-
-
 def write_to_tsv(coverage_list):
     """
     This function will take a list of coverage data and write it to a tsv file.
@@ -401,5 +332,27 @@ def write_to_tsv(coverage_list):
             tsv_writer.writerow(i)
 
 
-write_to_tsv(sorted_cov_list)
-print("Done!")
+if __name__ == "__main__":
+    all_path = []
+    # The list "all_path" contains a list in the form of [node_id, path_names]
+    gr.for_each_handle(show_steps)
+    gaf_nodes = read_gaf(args.gaf_path)
+    pan_path = make_paths(all_path)
+    # The list "pan_path" contains lists in the form of [node_id, [path_name, path_name, ...]]
+    hom_path, ref_hom_path = get_path_names(separate_paths(pan_path))
+    # These are just lists of the path names for the homology arms and the reference homology arms.
+    node_dict = create_node_dict(pan_path)
+    # This dictionary can be used to look up the path names for a given node.
+    my_edges = find_legit_edges(gaf_nodes)
+    read_edges = create_edge_dict(my_edges)
+    path_dict = create_reverse_dict(node_dict)
+    shared_edges = []
+    create_shared_edges(hom_path)
+    edge_tally = create_edge_tally_dict(read_edges, get_path_names(separate_paths(pan_path)))
+    paths_for_coverage = group_paths(hom_path)
+    cov_list = make_coverage_table(paths_for_coverage)
+    # The line below sorts the list by the homology arm coverage, making it easy to see which hom_arm has the highest
+    # coverage.
+    sorted_cov_list = sorted(cov_list, key=lambda row: row[1], reverse=True)
+    write_to_tsv(sorted_cov_list)
+    print("Done!")
