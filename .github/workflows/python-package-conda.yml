@@ -14,7 +14,6 @@ jobs:
         run: |
           git config --global core.autocrlf false
           git config --global core.eol lf
-
       - uses: actions/checkout@v3
       
       - name: Set up Python 3.10
@@ -25,7 +24,6 @@ jobs:
       - name: Add conda to system path
         run: |
           echo $CONDA/bin >> $GITHUB_PATH
-
       - name: Install dependencies
         run: |
           conda env update --file environment.yaml --name base
@@ -41,8 +39,3 @@ jobs:
           nice bash find_coverage_test.sh
         shell: bash
         working-directory: Test
-
-
-
-        
-
