@@ -319,7 +319,8 @@ def create_edge_tally_dict(dictionary, paths):
             temp = create_edges(path_dict.get(j))
             for k in temp:
                 if k not in shared_edges and dictionary.get(k) is not None:
-                    tally += dictionary.get(k)
+                    if dictionary.get(k) > tally:
+                        tally = dictionary.get(k)
             tally_dictionary[j] = tally
     return tally_dictionary
 
