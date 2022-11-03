@@ -50,9 +50,6 @@ def read_gaf(gaf_file_name):
         if mapq < 30:
             continue
         nodes.append(row[5])
-    # print(nodes)
-    # nodes is a list containing strings like ">14>15>16", all I need to do is find the step that iterates over this
-    # list and change it so that it only checks for a match once.
     return nodes
 
 
@@ -156,7 +153,6 @@ def find_legit_edges(reads):
             # This is something that could change if we are interested in the orientation of the reads.
             con_nodes.append(x[1:].split('>'))
             # The [1:] above takes away the leading empty string that is left behind by the split function.
-    print(f"connected nodes: {con_nodes}")
     return con_nodes
 
 
@@ -173,7 +169,6 @@ def create_edge_dict(edges):
     edge_list = []
     edge_dict = {}
     for nodes in edges:
-        # print(nodes)
         if len(nodes) == 2:
             temp = (int(nodes[0]), int(nodes[1]))
             temp = sorted(temp)
@@ -189,14 +184,7 @@ def create_edge_dict(edges):
             edge_dict[i] += 1
         else:
             edge_dict[i] = 1
-    print(f"edge dictionary: {edge_dict}")
     return edge_dict
-
-    # for i in edge_list:
-    #     if i not in edge_dict:
-    #         edge_dict[i] = 1
-    # print(edge_dict)
-    # return edge_dict
 
 
 def create_reverse_dict(dictionary):
@@ -270,10 +258,8 @@ def create_edge_tally_dict(dictionary, paths):
             temp = create_edges(path_dict.get(j))
             for k in temp:
                 if k not in shared_edges and dictionary.get(k) is not None:
-                    if dictionary.get(k) > tally:
-                        tally = dictionary.get(k)
+                    tally += dictionary.get(k)
             tally_dictionary[j] = tally
-    print(tally_dictionary)
     return tally_dictionary
 
 
