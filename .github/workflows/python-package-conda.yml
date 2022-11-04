@@ -32,6 +32,10 @@ jobs:
       - name: cd
         run: cd Test
         shell: bash
+        
+      - name: install jemalloc
+        run: apt-get install -y jemalloc
+        shell: bash
 
       - uses: actions/checkout@v3
       - name: test script
