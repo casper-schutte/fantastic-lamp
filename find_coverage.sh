@@ -2,8 +2,8 @@
 
 # The commands below are to ensure that odgi works correctly in the python script.
 env LD_PRELOAD=libjemalloc.so.2 PYTHONPATH=lib python3 -c 'import odgi'
-#export LD_PRELOAD=/lib/x86_64-linux-gnu/libjemalloc.so.2
-export LD_PRELOAD=/home/ec2-user/.conda/pkgs/libjemalloc-5.2.1-h9c3ff4c_6/lib/libjemalloc.so.2
+export LD_PRELOAD=/lib/x86_64-linux-gnu/libjemalloc.so.2
+#export LD_PRELOAD=/home/ec2-user/.conda/pkgs/libjemalloc-5.2.1-h9c3ff4c_6/lib/libjemalloc.so.2
 
 
 # This script requires as input:
@@ -51,7 +51,9 @@ vg index -p -g yeast+edits.og.gfa.gcsa -t 16 yeast+edits.og.gfa.xg
 
 cat Data_names.txt | while read -r line; do
   vg map -x yeast+edits.og.gfa.xg -g yeast+edits.og.gfa.gcsa -t 16 -% -f "$line"1_001.fastq.gz -f "$line"2_001.fastq.gz| pv -l >"$line".gaf
-  python3 compare_coverage.py --gaf-path "$line".gaf --out-path "$line".tsv --og-path "yeast+edits.og"
+#  vg map -x yeast+edits.og.gfa.xg -g yeast+edits.og.gfa.gcsa -t 16 -% -f "$line"1_001.fastq.gz | pv -l >"$line".gaf
+
+  python3 compare_coverage_read_info.py --gaf-path "$line".gaf --out-path "$line".tsv --og-path "yeast+edits.og"
 done
 
 echo "Done!"

@@ -50,6 +50,7 @@ def show_steps(handle):
 # Most everything above this line was borrowed and slightly adapted from the odgi tutorial on GitHub
 gr.for_each_handle(show_steps)
 
+
 # read_info = {}
 
 
@@ -74,6 +75,8 @@ def read_gaf(gaf_file_name):
 
 
 gaf_nodes = read_gaf(args.gaf_path)
+
+
 # print(read_info.keys())
 
 # print(read_info.get("NB552468:203:HTF2WBGXK:3:13407:16514:19264B"))
@@ -303,29 +306,7 @@ def create_shared_edges(hpaths):
 create_shared_edges(hom_path)
 
 
-def create_edge_tally_dict(dictionary, paths):
-    """
-    This function takes a dictionary of edges {(node1, node2): number of reads} and a list of path names.
-    It then creates a dictionary that maps the path names to the number of edges in the path that had reads mapped
-    to them.
-    :param dictionary:
-    :param paths:
-    :return:
-    """
-    tally_dictionary = {}
-    for i in paths:
-        for j in i:
-            tally = 0
-            temp = create_edges(path_dict.get(j))
-            for k in temp:
-                if k not in shared_edges and dictionary.get(k) is not None:
-                    if dictionary.get(k) > tally:
-                        tally = dictionary.get(k)
-            tally_dictionary[j] = tally
-    return tally_dictionary
-
-
-edge_tally = create_edge_tally_dict(read_edges, get_path_names(separate_paths(pan_path)))
+# edge_tally = {}
 
 
 def read_name_dict():
@@ -361,15 +342,42 @@ def read_name_dict():
                 else:
                     if x not in new_dict:
                         new_dict[x] = None
-    print(f'NB502113:716:HMH2GBGXK:1:12203:19905:11061A:{read_info.get("NB502113:716:HMH2GBGXK:1:12203:19905:11061A")}')
-    print(f'NB502113:716:HMH2GBGXK:1:12203:19905:11061B:{read_info.get("NB502113:716:HMH2GBGXK:1:12203:19905:11061B")}')
+    # print(f'NB502113:716:HMH2GBGXK:1:12203:19905:11061A:{read_info.get("NB502113:716:HMH2GBGXK:1:12203:19905:11061A")}')
+    # print(f'NB502113:716:HMH2GBGXK:1:12203:19905:11061B:{read_info.get("NB502113:716:HMH2GBGXK:1:12203:19905:11061B")}')
     return new_dict
 
 
 read_dict = read_name_dict()
 
-print(len(read_dict))
 
+# print(read_dict)
+
+def create_edge_tally_dict(dictionary, paths):
+    """
+    This function takes a dictionary of edges {(node1, node2): number of reads} and a list of path names.
+    It then creates a dictionary that maps the path names to the number of edges in the path that had reads mapped
+    to them.
+    :param dictionary:
+    :param paths:
+    :return:
+    """
+    tally_dictionary = {}
+    for i in paths:
+        for j in i:
+            # print(j)
+            tally = 0
+            temp = create_edges(path_dict.get(j))
+            for k in temp:
+                if k not in shared_edges and dictionary.get(k) is not None:
+                    if dictionary.get(k) > tally:
+                        tally = dictionary.get(k)
+            tally_dictionary[j] = tally
+    return tally_dictionary
+
+
+# edge_tally = create_edge_tally_dict(read_edges, get_path_names(separate_paths(pan_path)))
+
+# print(edge_tally)
 
 
 # print(read_dict.get((13054, 13055)))
@@ -378,15 +386,6 @@ print(len(read_dict))
 #     print(i)
 #     print(read_dict.get(i))
 #
-
-
-def tally_reads_in_path(path):
-    """
-    This function takes a path and returns the number of edges in the path that had reads mapped to them.
-    :param path:
-    :return:
-    """
-    return edge_tally[path]
 
 
 def num_edges(path):
@@ -404,6 +403,7 @@ def num_edges(path):
 
 
 read_table = {}
+count_table = {}
 
 
 def group_paths(paths):
@@ -425,7 +425,10 @@ def group_paths(paths):
                     for j in read_dict.get(i):
                         if j not in temp2[1] and j not in shared_edges:
                             temp2[1].append(j)
+            # read_table and count_table map the name of a path to the names of reads that map to them and to the
+            # number of reads that map to them, respectively.
             read_table[temp2[0]] = temp2[1]
+            count_table[temp2[0]] = len(temp2[1])
             ref_edges = create_edges(path_dict.get(f"ref_{hpath}"))
             temp3 = [f"ref_{hpath}", []]
             for i in ref_edges:
@@ -434,14 +437,23 @@ def group_paths(paths):
                         if j not in temp3[1] and j not in shared_edges:
                             temp3[1].append(j)
             read_table[temp3[0]] = temp3[1]
+            count_table[temp3[0]] = len(temp3[1])
     # print(read_table)
     return grouped_paths
 
 
 paths_for_coverage = group_paths(hom_path)
 
+# print(count_table)
 
-# print(read_table)
+
+def tally_reads_in_path(path):
+    """
+    This function takes a path and returns the number of edges in the path that had reads mapped to them.
+    :param path:
+    :return:
+    """
+    return count_table.get(path)
 
 
 def make_coverage_table(path_ids):
@@ -468,12 +480,13 @@ cov_list = make_coverage_table(paths_for_coverage)
 # coverage.
 sorted_cov_list = sorted(cov_list, key=lambda row: row[1], reverse=True)
 
-print(f"homology_arm_34659+:")
-print(path_dict.get("homology_arm_34659+"))
-print(create_edges(path_dict.get("homology_arm_34659+")))
-print(f"ref_homology_arm_34659+")
-print(path_dict.get("ref_homology_arm_34659+"))
-print(create_edges(path_dict.get("ref_homology_arm_34659+")))
+
+# print(f"homology_arm_34659+:")
+# print(path_dict.get("homology_arm_34659+"))
+# print(create_edges(path_dict.get("homology_arm_34659+")))
+# print(f"ref_homology_arm_34659+")
+# print(path_dict.get("ref_homology_arm_34659+"))
+# print(create_edges(path_dict.get("ref_homology_arm_34659+")))
 
 
 def write_to_tsv(coverage_list):
