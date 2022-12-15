@@ -30,7 +30,7 @@ jobs:
           pip install pytest
           
       - name: install jemalloc
-        run: pip install jemalloc=5.2.1
+        run: pip install jemalloc==5.2.1
         shell: bash
 
 
