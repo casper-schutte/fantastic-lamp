@@ -28,10 +28,6 @@ jobs:
         run: |
           conda env update --file environment.yaml --name base
           pip install pytest
-          
-      - name: install jemalloc
-        run: pip install jemalloc-dev
-        shell: bash
 
 
       - name: cd
