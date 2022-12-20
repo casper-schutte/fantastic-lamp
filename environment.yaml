@@ -11,5 +11,5 @@ dependencies:
   - seqwish
   - pandas
   - pv
-  - libjemalloc
+  - libjemalloc==5.2.1
   - pytest
