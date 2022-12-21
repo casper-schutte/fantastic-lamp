@@ -2,13 +2,13 @@ name: simple-test
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, main ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ master ]
 
 jobs:
   run-script:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: Set git to use LF
         run: |
@@ -28,7 +28,8 @@ jobs:
         run: |
           conda env update --file environment.yaml --name base
           pip install pytest
-          
+
+
       - name: cd
         run: cd Test
         shell: bash
@@ -39,3 +40,5 @@ jobs:
           nice bash find_coverage_test.sh
         shell: bash
         working-directory: Test
+        
+        

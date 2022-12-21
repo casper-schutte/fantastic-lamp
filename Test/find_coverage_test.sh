@@ -66,5 +66,5 @@ pytest
 #cd ./t || exit
 #bash prove test_bashtap.t
 
-rm simple_test.tsv
+
 echo "Done!"

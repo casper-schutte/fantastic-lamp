@@ -51,7 +51,9 @@ vg index -p -g yeast+edits.og.gfa.gcsa -t 16 yeast+edits.og.gfa.xg
 
 cat Data_names.txt | while read -r line; do
   vg map -x yeast+edits.og.gfa.xg -g yeast+edits.og.gfa.gcsa -t 16 -% -f "$line"1_001.fastq.gz -f "$line"2_001.fastq.gz| pv -l >"$line".gaf
-  python3 compare_coverage.py --gaf-path "$line".gaf --out-path "$line".tsv --og-path "yeast+edits.og"
+#  vg map -x yeast+edits.og.gfa.xg -g yeast+edits.og.gfa.gcsa -t 16 -% -f "$line"1_001.fastq.gz | pv -l >"$line".gaf
+
+  python3 compare_coverage_read_info.py --gaf-path "$line".gaf --out-path "$line".tsv --og-path "yeast+edits.og"
 done
 
 echo "Done!"

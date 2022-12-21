@@ -322,7 +322,7 @@ def make_coverage_table(path_ids):
 
 def write_to_tsv(coverage_list):
     """
-    This function will take a list of coverage data and write it to a tsv file.
+    This function will take a list of coverage data and write it to a tsv file
     """
     with open(args.out_path, "wt") as tsv_file:
         tsv_writer = csv.writer(tsv_file, delimiter='\t', lineterminator='\n')
