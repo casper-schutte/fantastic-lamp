@@ -24,6 +24,16 @@ jobs:
       - name: Add conda to system path
         run: |
           echo $CONDA/bin >> $GITHUB_PATH
+          
+      
+      - name: Restore cache
+        uses: actions/cache@v2
+        with:
+          path: $HOME/cache
+          key: ubuntu-20.04-cache-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ubuntu-20.04-cache-
+      
       - name: Install dependencies
         run: |
           conda env update --file environment.yaml --name base
