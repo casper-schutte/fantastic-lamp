@@ -26,13 +26,21 @@ jobs:
           echo $CONDA/bin >> $GITHUB_PATH
           
       
-      - name: Restore cache
+      - name: Restore conda cache
         uses: actions/cache@v2
         with:
-          path: $HOME/cache
-          key: ubuntu-20.04-cache-${{ hashFiles('**/package-lock.json') }}
+          path: $CONDA/pkgs
+          key: ubuntu-20.04-conda-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ubuntu-20.04-cache-
+            ubuntu-20.04-conda-
+            
+      - name: Restore pip cache
+        uses: actions/cache@v2
+        with:
+          path: $HOME/.cache/pip
+          key: ubuntu-20.04-pip-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ubuntu-20.04-pip-
       
       - name: Install dependencies
         run: |
@@ -46,7 +54,7 @@ jobs:
           path: $CONDA/pkgs
           key: ${{ runner.os }}-conda-${{ hashFiles('**/environment.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-conda-
+            ubuntu-20.04-conda-
 
       - name: Cache pip packages
         uses: actions/cache@v2
@@ -54,7 +62,7 @@ jobs:
           path: $HOME/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
-            ${{ runner.os }}-pip-
+             ubuntu-20.04-pip-
 
 
       - name: cd
