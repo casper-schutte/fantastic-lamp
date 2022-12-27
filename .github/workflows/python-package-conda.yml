@@ -34,7 +34,7 @@ jobs:
           restore-keys: |
             Linux-conda-${{ hashFiles('**/environment.yaml') }}
         env:
-          CONDA_CACHE_HIT: ${{ steps.cache-conda.outputs.cache-hit }}
+          CONDA_CACHE_HIT: true
 
       
       - name: Install dependencies
