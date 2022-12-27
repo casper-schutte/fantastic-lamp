@@ -36,9 +36,19 @@ jobs:
         env:
           CONDA_CACHE_HIT: true
 
+      - name: Restore conda environment from cache
+        uses: actions/cache@v2
+        with:
+          path: $CONDA/envs/base
+          key: ${{ runner.os }}-conda-env-${{ hashFiles('**/environment.yaml') }}
+          restore-keys: |
+            ubuntu-20.04-conda-env-${{ hashFiles('**/environment.yaml') }}
+        env: 
+          CONDA_ENV_HIT: true
+
       
       - name: Install dependencies
-        if: env.CONDA_CACHE_HIT != 'true'
+        if: env.CONDA_CACHE_HIT != 'true' and env.CONDA_ENV_HIT
         run: |
           conda env update --file environment.yaml --name base
 
@@ -51,6 +61,11 @@ jobs:
           restore-keys: |
             ubuntu-20.04-conda-${{ hashFiles('**/environment.yaml') }}
 
+      - name: Save conda environment to cache
+        uses: actions/cache@v2
+        with:
+          path: $CONDA/envs/base
+          key: ${{ runner.os }}-conda-env-${{ hashFiles('**/environment.yaml') }}
 
 
 
