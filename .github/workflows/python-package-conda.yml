@@ -30,9 +30,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: $CONDA/pkgs
-          key: ubuntu-20.04-conda-${{ hashFiles('**/environment.yaml') }}
+          key: Linux-conda-${{ hashFiles('**/environment.yaml') }}
           restore-keys: |
-            ubuntu-20.04-conda-${{ hashFiles('**/environment.yaml') }}
+            Linux-conda-${{ hashFiles('**/environment.yaml') }}
             
 
       
