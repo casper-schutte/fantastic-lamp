@@ -27,7 +27,7 @@ jobs:
           
       
       - name: Restore conda cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: $CONDA/pkgs
           key: Linux-conda-${{ hashFiles('**/environment.yaml') }}
@@ -37,7 +37,7 @@ jobs:
           CONDA_CACHE_HIT: true
 
       - name: Restore conda environment from cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: $CONDA/envs/base
           key: ${{ runner.os }}-conda-env-${{ hashFiles('**/environment.yaml') }}
@@ -55,7 +55,7 @@ jobs:
 
           
       - name: Cache conda packages
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: $CONDA/pkgs
           key: ${{ runner.os }}-conda-${{ hashFiles('**/environment.yaml') }}
@@ -63,7 +63,7 @@ jobs:
             ubuntu-20.04-conda-${{ hashFiles('**/environment.yaml') }}
 
       - name: Save conda environment to cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: $CONDA/envs/base
           key: ${{ runner.os }}-conda-env-${{ hashFiles('**/environment.yaml') }}
