@@ -45,8 +45,9 @@ jobs:
       - name: Install dependencies
         run: |
           conda env update --file environment.yaml --name base
-          pip install -r requirements.txt
           pip freeze > requirements.txt
+          pip install -r requirements.txt
+
           
       - name: Cache conda and pip packages
         uses: actions/cache@v2
