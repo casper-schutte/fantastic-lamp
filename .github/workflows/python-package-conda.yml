@@ -33,10 +33,12 @@ jobs:
           key: Linux-conda-${{ hashFiles('**/environment.yaml') }}
           restore-keys: |
             Linux-conda-${{ hashFiles('**/environment.yaml') }}
-            
+        env:
+          CONDA_CACHE_HIT: ${{ steps.cache-conda.outputs.cache-hit }}
 
       
       - name: Install dependencies
+        if: env.CONDA_CACHE_HIT != 'true'
         run: |
           conda env update --file environment.yaml --name base
 
