@@ -51,8 +51,8 @@ jobs:
         if: ${{ (env.CONDA_CACHE_HIT != 'true') &&
             (env.CONDA_ENV_HIT != 'true') }}
         run: |
+          pip install pytest
           conda env update --file environment.yaml --name base --prune
-
           
       - name: Cache conda packages
         uses: actions/cache@v3
