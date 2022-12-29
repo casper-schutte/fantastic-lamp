@@ -29,7 +29,7 @@ jobs:
       - name: Restore conda cache
         uses: actions/cache@v3
         with:
-          path: $CONDA/pkgs
+          path: ~/conda_pkgs_dir
           key: Linux-conda-${{ hashFiles('**/environment.yaml') }}
           restore-keys: |
             Linux-conda-${{ hashFiles('**/environment.yaml') }}
@@ -51,13 +51,12 @@ jobs:
         if: ${{ (env.CONDA_CACHE_HIT != 'true') &&
             (env.CONDA_ENV_HIT != 'true') }}
         run: |
-          pip install pytest
           conda env update --file environment.yaml --name base --prune
           
       - name: Cache conda packages
         uses: actions/cache@v3
         with:
-          path: $CONDA/pkgs
+          path: ~/conda_pkgs_dir
           key: ${{ runner.os }}-conda-${{ hashFiles('**/environment.yaml') }}
           restore-keys: |
             ubuntu-20.04-conda-${{ hashFiles('**/environment.yaml') }}
