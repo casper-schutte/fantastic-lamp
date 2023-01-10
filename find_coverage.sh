@@ -7,9 +7,11 @@
 # needs to be corrected. If the error persists, good luck.
 env LD_PRELOAD=libjemalloc.so.2 PYTHONPATH=lib python3 -c 'import odgi'
 if [ "$1" == "-t" ]; then
-  export LD_PRELOAD=/home/ec2-user/.conda/pkgs/libjemalloc-5.2.1-h9c3ff4c_6/lib/libjemalloc.so.2
-else
   export LD_PRELOAD=/lib/x86_64-linux-gnu/libjemalloc.so.2
+
+else
+  export LD_PRELOAD=/home/ec2-user/.conda/pkgs/libjemalloc-5.2.1-h9c3ff4c_6/lib/libjemalloc.so.2
+
 fi
 
 
