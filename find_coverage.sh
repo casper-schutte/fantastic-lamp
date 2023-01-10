@@ -87,6 +87,6 @@ else
     python3 compare_coverage_read_info.py --gaf-path "$line".gaf --out-path "$line".tsv --og-path "yeast+edits.og"
   done
 fi
-done
+
 
 echo "Done!"
