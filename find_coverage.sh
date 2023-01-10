@@ -1,9 +1,17 @@
 #!/bin/bash
 
+
 # The commands below are to ensure that odgi works correctly in the python script.
+# The -t flag is used for testing, so don't use it.
+# If you experience an error regarding segmentation faults, jemalloc is to blame and the path
+# needs to be corrected. If the error persists, good luck.
 env LD_PRELOAD=libjemalloc.so.2 PYTHONPATH=lib python3 -c 'import odgi'
-#export LD_PRELOAD=/lib/x86_64-linux-gnu/libjemalloc.so.2
-export LD_PRELOAD=/home/ec2-user/.conda/pkgs/libjemalloc-5.2.1-h9c3ff4c_6/lib/libjemalloc.so.2
+if [ "$1" == "-t" ]; then
+  export LD_PRELOAD=/home/ec2-user/.conda/pkgs/libjemalloc-5.2.1-h9c3ff4c_6/lib/libjemalloc.so.2
+else
+  export LD_PRELOAD=/lib/x86_64-linux-gnu/libjemalloc.so.2
+fi
+
 
 
 # This script requires as input:
@@ -21,17 +29,31 @@ export LD_PRELOAD=/home/ec2-user/.conda/pkgs/libjemalloc-5.2.1-h9c3ff4c_6/lib/li
 # in column BA, the 53rd column, and the corresponding homology_arm edit sequence is in column 54.
 # Note for future use: can if the design library is different, create a new variable containing the appropriate column
 # numbers.
-cat DesignLibraryDetails_ODD126.withEditWindow.csv | awk -F',' '{print ">homology_arm_"$1; print $54;}' | tr -d \- > ODD126_homology_arms.fa
-cat DesignLibraryDetails_ODD126.withEditWindow.csv | awk -F',' '{print ">ref_homology_arm_"$1; print $53;}' | tr -d \- > ref_subpaths.fa
+
+if [ "$1" == "-t" ]; then
+  cat hom_arms_test.fa > ODD126_homology_arms.fa
+  cat ref_arms_test.fa  > ref_subpaths.fa
+else
+  cat DesignLibraryDetails_ODD126.withEditWindow.csv | awk -F',' '{print ">homology_arm_"$1; print $54;}' | tr -d \- > ODD126_homology_arms.fa
+  cat DesignLibraryDetails_ODD126.withEditWindow.csv | awk -F',' '{print ">ref_homology_arm_"$1; print $53;}' | tr -d \- > ref_subpaths.fafi
+fi
+
 
 # Combine homology arms and reference over the range of the homology arms into one FASTA file.
 cat ref_subpaths.fa ODD126_homology_arms.fa > ODD126_ref_and_hom_arms.fa
 
-# map the homology arms against the reference
-minimap2 -k 19 -w 1 -cx sr ref_and_mt.fna ODD126_ref_and_hom_arms.fa >ODD126_ref_and_hom_arms.paf
+if [ "$1" == "-t" ]; then
+  ref_and_mt=tiny_genome.fa
+else
+  ref_and_mt=ref_and_mt.fna
+fi
 
-# combine the inputs to seqwish in a single file (and add plasmid sequences)
-cat ref_and_mt.fna ODD126_ref_and_hom_arms.fa ODD126_augmented_CB39.fasta >yeast+edits.fa
+# map the homology arms against the reference
+minimap2 -k 19 -w 1 -cx sr $ref_and_mt ODD126_ref_and_hom_arms.fa >ODD126_ref_and_hom_arms.paf
+
+# combine the inputs to seqwish in a single file (and add plasmid sequences). In the test, the
+# augmented FASTA file is not used.
+cat $ref_and_mt ODD126_ref_and_hom_arms.fa ODD126_augmented_CB39.fasta >yeast+edits.fa
 
 # induce the variation graph
 seqwish -g yeast+edits.gfa -s yeast+edits.fa -p ODD126_ref_and_hom_arms.paf -P
@@ -49,11 +71,21 @@ vg index -p -g yeast+edits.og.gfa.gcsa -t 16 yeast+edits.og.gfa.xg
 
 # 2) Make GAF files and run python script for each data set:
 
-cat Data_names.txt | while read -r line; do
-  vg map -x yeast+edits.og.gfa.xg -g yeast+edits.og.gfa.gcsa -t 16 -% -f "$line"1_001.fastq.gz -f "$line"2_001.fastq.gz| pv -l >"$line".gaf
-#  vg map -x yeast+edits.og.gfa.xg -g yeast+edits.og.gfa.gcsa -t 16 -% -f "$line"1_001.fastq.gz | pv -l >"$line".gaf
 
-  python3 compare_coverage_read_info.py --gaf-path "$line".gaf --out-path "$line".tsv --og-path "yeast+edits.og"
+cat Data_names.txt | while read -r line; do
+  if [ "$1" == "-t" ]; then
+    # This one is for testing
+    vg map -x yeast+edits.og.gfa.xg -g yeast+edits.og.gfa.gcsa -t 16 -% -f "simple_test".fastq.gz | pv -l >"simple_test".gaf
+    python3 compare_coverage.py --gaf-path "simple_test".gaf --out-path "simple_test".tsv --og-path "yeast+edits.og"
+    pytest
+  else
+    # One of the lines below handles paired-end reads, and the other does not. Pay attention to the names
+    # of the FASTQ files and the names of the files in Data_names.txt
+    #vg map -x yeast+edits.og.gfa.xg -g yeast+edits.og.gfa.gcsa -t 16 -% -f "$line"1_001.fastq.gz -f "$line"2_001.fastq.gz| pv -l >"$line".gaf
+    vg map -x yeast+edits.og.gfa.xg -g yeast+edits.og.gfa.gcsa -t 16 -% -f "$line"1_001.fastq.gz | pv -l >"$line".gaf
+    python3 compare_coverage_read_info.py --gaf-path "$line".gaf --out-path "$line".tsv --og-path "yeast+edits.og"
+
+  fi
 done
 
 echo "Done!"
