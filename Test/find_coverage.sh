@@ -72,20 +72,21 @@ vg index -p -g yeast+edits.og.gfa.gcsa -t 16 yeast+edits.og.gfa.xg
 # 2) Make GAF files and run python script for each data set:
 
 
-cat Data_names.txt | while read -r line; do
-  if [ "$1" == "-t" ]; then
-    # This one is for testing
-    vg map -x yeast+edits.og.gfa.xg -g yeast+edits.og.gfa.gcsa -t 16 -% -f "simple_test".fastq.gz | pv -l >"simple_test".gaf
-    python3 compare_coverage.py --gaf-path "simple_test".gaf --out-path "simple_test".tsv --og-path "yeast+edits.og"
-    pytest
-  else
+
+if [ "$1" == "-t" ]; then
+  # This one is for testing
+  vg map -x yeast+edits.og.gfa.xg -g yeast+edits.og.gfa.gcsa -t 16 -% -f "simple_test".fastq.gz | pv -l >"simple_test".gaf
+  python3 compare_coverage.py --gaf-path "simple_test".gaf --out-path "simple_test".tsv --og-path "yeast+edits.og"
+  pytest
+else
+  cat Data_names.txt | while read -r line; do
     # One of the lines below handles paired-end reads, and the other does not. Pay attention to the names
     # of the FASTQ files and the names of the files in Data_names.txt
     #vg map -x yeast+edits.og.gfa.xg -g yeast+edits.og.gfa.gcsa -t 16 -% -f "$line"1_001.fastq.gz -f "$line"2_001.fastq.gz| pv -l >"$line".gaf
     vg map -x yeast+edits.og.gfa.xg -g yeast+edits.og.gfa.gcsa -t 16 -% -f "$line"1_001.fastq.gz | pv -l >"$line".gaf
     python3 compare_coverage_read_info.py --gaf-path "$line".gaf --out-path "$line".tsv --og-path "yeast+edits.og"
-
-  fi
+  done
+fi
 done
 
 echo "Done!"
