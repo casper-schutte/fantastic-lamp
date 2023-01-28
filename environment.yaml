@@ -5,10 +5,10 @@ channels:
 - anaconda
 - defaults
 dependencies:
-  - vg
-  - odgi
-  - minimap2
-  - seqwish
+  - vg==1.45
+  - odgi==0.6.2
+  - minimap2==2.22
+  - seqwish==0.7.2
   - pandas
   - pv
   - libjemalloc==5.2.1
