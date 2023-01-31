@@ -24,15 +24,6 @@ jobs:
       - name: Add conda to system path
         run: |
           echo $CONDA/bin >> $GITHUB_PATH
-          
-      
-      
-      - name: Install dependencies
-        if: ${{ (env.CONDA_CACHE_HIT != 'true') &&
-            (env.CONDA_ENV_HIT != 'true') }}
-        run: |
-          conda env update --file environment.yaml --name base --prune
-
 
 
       - name: cd
