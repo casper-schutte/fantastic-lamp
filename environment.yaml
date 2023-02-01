@@ -1,7 +1,6 @@
 name: fantastic-lamp
 channels:
 - conda-forge
-- bioconda
 
 
 
