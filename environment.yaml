@@ -4,12 +4,14 @@ channels:
 - bioconda
 - anaconda
 - defaults
+
+
 dependencies:
-  - vg==1.43.0
-  - odgi==0.7.3
-  - minimap2==2.24
-  - seqwish==0.7.6
-  - pandas==1.4.2
-  - pv==1.6.6
-  - libjemalloc==5.2.1
-  - pytest==7.1.2
+  - vg
+  - odgi
+  - minimap2
+  - seqwish
+  - pandas
+  - pv
+  - libjemalloc
+  - pytest
