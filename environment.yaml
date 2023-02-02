@@ -1,8 +1,8 @@
 name: fantastic-lamp
 channels:
-- bioconda
-- anaconda
 - conda-forge
+- defaults
+- bioconda
 
 
 
