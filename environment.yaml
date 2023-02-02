@@ -1,12 +1,13 @@
 name: fantastic-lamp
 channels:
-- conda-forge
 - defaults
+- ananconda
 - bioconda
-
+- conda-forge
 
 
 dependencies:
+  - glibc==2.17
   - vg
   - odgi
   - minimap2
