@@ -37,5 +37,5 @@ jobs:
         run: |
           nice bash find_coverage.sh -t
         shell: bash
-        working-directory: Test
+        #working-directory: Test
         
