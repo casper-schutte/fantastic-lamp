@@ -36,6 +36,6 @@ jobs:
       - name: test script
         run: |
           conda run -n fantastic-lamp nice bash find_coverage.sh -t
-          shell: bash
+        shell: bash
         working-directory: Test
         
