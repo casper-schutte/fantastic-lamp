@@ -2,8 +2,7 @@ name: fantastic-lamp
 channels:
 - conda-forge
 - bioconda
-- anaconda
-- defaults
+
 dependencies:
   - vg
   - odgi
@@ -11,5 +10,5 @@ dependencies:
   - seqwish
   - pandas
   - pv
-  - libjemalloc==5.2.1
+  - libjemalloc
   - pytest
