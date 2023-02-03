@@ -2,8 +2,6 @@ name: fantastic-lamp
 channels:
 - conda-forge
 - bioconda
-- anaconda
-- defaults
 
 dependencies:
   - vg
