@@ -1,0 +1,41 @@
+name: Test
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  run-script:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Set git to use LF
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.eol lf
+      - uses: actions/checkout@v3
+      
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.10'
+
+      - name: Add conda to system path
+        run: |
+          echo $CONDA/bin >> $GITHUB_PATH
+          
+      - name: Install dependencies
+        run: |
+          conda env update --file environment.yaml
+      - name: cd
+        run: cd Test
+        shell: bash
+
+      - uses: actions/checkout@v3
+      - name: test script
+        run: |
+          conda run -n fantastic-lamp nice bash find_coverage.sh -t
+        shell: bash
+        working-directory: Test
+        
