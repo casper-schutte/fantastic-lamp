@@ -28,9 +28,7 @@ jobs:
       - name: Install dependencies
         run: |
           conda env update --file environment.yaml
-      - name: cd
-        run: cd Test
-        shell: bash
+
 
       - uses: actions/checkout@v3
       - name: test script
