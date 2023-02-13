@@ -29,14 +29,19 @@ jobs:
         run: |
           conda env update --file environment.yaml
 
-      - name: cd
-        run: cd Test
-        shell: bash
+#      - name: cd
+#        run: cd Test
+#        shell: bash
+        
+      - name: checkout test folder
+      - uses: actions/checkout@v3
+        with:
+          path: /Test
 
       - uses: actions/checkout@v3
       - name: test script
         run: |
           conda run -n fantastic-lamp nice bash find_coverage.sh -t
         shell: bash
-        working-directory: Test
+        #working-directory: Test
         
