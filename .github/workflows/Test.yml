@@ -38,8 +38,9 @@ jobs:
         with:
           path: /Test
 
-      - uses: actions/checkout@v3
+
       - name: test script
+      #- uses: actions/checkout@v3
         run: |
           conda run -n fantastic-lamp nice bash find_coverage.sh -t
         shell: bash
