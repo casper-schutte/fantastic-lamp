@@ -53,8 +53,11 @@ minimap2 -k 19 -w 1 -cx sr $ref_and_mt ODD126_ref_and_hom_arms.fa >ODD126_ref_an
 
 # combine the inputs to seqwish in a single file (and add plasmid sequences). In the test, the
 # augmented FASTA file is not used.
-cat $ref_and_mt ODD126_ref_and_hom_arms.fa ODD126_augmented_CB39.fasta >yeast+edits.fa
-
+if [ "$1" == "-t" ]; then
+  cat $ref_and_mt ODD126_ref_and_hom_arms.fa >yeast+edits.fa
+else
+  cat $ref_and_mt ODD126_ref_and_hom_arms.fa ODD126_augmented_CB39.fasta >yeast+edits.fa
+fi
 # induce the variation graph
 seqwish -g yeast+edits.gfa -s yeast+edits.fa -p ODD126_ref_and_hom_arms.paf -P
 
