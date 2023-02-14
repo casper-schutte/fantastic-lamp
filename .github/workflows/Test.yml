@@ -28,14 +28,17 @@ jobs:
       - name: Install dependencies
         run: |
           conda env update --file environment.yaml
+
       - name: cd
         run: cd Test
         shell: bash
+        
+
 
       - uses: actions/checkout@v3
       - name: test script
         run: |
           conda run -n fantastic-lamp nice bash find_coverage.sh -t
         shell: bash
-        working-directory: Test
+        #working-directory: Test
         
