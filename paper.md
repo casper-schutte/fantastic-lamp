@@ -28,8 +28,8 @@ text
 
 # Figures example
 
-![Caption for example figure.\label{fig:example}](figure.png)
-and referenced from text using \autoref{fig:example}.
+[//]: # (![Caption for example figure.\label{fig:example}]&#40;figure.png&#41;)
+[//]: # (and referenced from text using \autoref{fig:example}.)
 
 # Acknowledgements
 
