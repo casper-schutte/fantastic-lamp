@@ -5,8 +5,8 @@ import argparse
 
 # In order to use this script, you might need to run these two commands in the terminal:
 # env LD_PRELOAD=libjemalloc.so.2 PYTHONPATH=lib python3 -c 'import odgi'
-# export LD_PRELOAD=/lib/x86_64-linux-gnu/libjemalloc.so.2
-# export LD_PRELOAD=/home/ec2-user/.conda/pkgs/libjemalloc-5.2.1-h9c3ff4c_6/lib/l$
+# export LD_PRELOAD=/lib/x86_64-linux-gnu/libjemalloc.so.2 (or wherever your jemalloc is located)
+# If you are running the bash script, these commands are automatically initiated.
 
 
 def parse_args():
@@ -34,8 +34,6 @@ def step_str(step):
 
 
 all_path = []
-
-
 # The list "all_path" contains a list in the form of [node_id, path_names]
 
 
@@ -51,13 +49,10 @@ def show_steps(handle):
 gr.for_each_handle(show_steps)
 
 
-# read_info = {}
-
-
 def read_gaf(gaf_file_name):
     """
     This function takes a gaf file and returns a list of the nodes that reads in the
-    file were mapped to.
+    file were mapped to. Only reads with MAPQ higher than 30 are considered.
     :param: gaf_file_name
     :return: list of nodes
     """
@@ -77,11 +72,6 @@ def read_gaf(gaf_file_name):
 gaf_nodes = read_gaf(args.gaf_path)
 
 
-# print(read_info.keys())
-
-# print(read_info.get("NB552468:203:HTF2WBGXK:3:13407:16514:19264B"))
-
-
 def make_paths(path):
     """
     This function separates the names of the paths.
@@ -96,8 +86,6 @@ def make_paths(path):
 
 
 pan_path = make_paths(all_path)
-
-
 # The list "pan_path" contains lists in the form of [node_id, [path_name, path_name, ...]]
 
 
@@ -123,11 +111,12 @@ def separate_paths(paths):
 def get_path_names(paths):
     """
     This function returns 2 lists, one with the path names for the reference
-    and one for the homology arms.
+    and one with the path names for homology arms.
     :param paths:
     :return:
     """
-    # The bash script ensures that the correct names are given (the homology arm paths all start with "h")
+    # The bash script ensures that the correct names are given (the homology arm paths all start with "homology_arm_*" and
+    # the reference homology arm paths all start with "ref_homology_arm_*")
     h_arms = []
     ref_paths = []
     for path_name in paths:
@@ -139,16 +128,14 @@ def get_path_names(paths):
 
 
 hom_path, ref_hom_path = get_path_names(separate_paths(pan_path))
-
-
-# These are just lists of the path names for the homology arms and the reference homology arms.
+# This creates the lists of the path names for the homology arms and the reference homology arms.
 
 
 def create_node_dict(path):
     """
     creates a dictionary with the node IDs as keys and the path names as values. If it detects that a node is shared
     between a homology-arm path and a corresponding reference-homology-arm path, it will add the path name "shared" to
-    the node in this dictionary.
+    the node in this dictionary. These shared nodes are discarded when calculating coverage.
     :param path:
     :return:
     """
@@ -165,15 +152,12 @@ def create_node_dict(path):
         else:
             # i[1].append("shared")
             temp_dict[i[0]] = i[1]
+            # Double check this function? Is this correct?
     return temp_dict
 
 
-# Need to investigate the efficiency of this function/method of separating the shared and unshared paths.
-
 
 node_dict = create_node_dict(pan_path)
-
-
 # This dictionary can be used to look up the path names for a given node.
 
 
@@ -208,9 +192,6 @@ def find_legit_edges(reads):
 
 my_edges = find_legit_edges(gaf_nodes)
 
-
-# print(my_info)
-# The dictionary "my_info" contains the names of the reads and the edges they map to.
 
 def create_edge_dict(edges):
     """
@@ -306,13 +287,9 @@ def create_shared_edges(hpaths):
 create_shared_edges(hom_path)
 
 
-# edge_tally = {}
-
-
 def read_name_dict():
     """
-    This function should map the names of the reads to the path name to which that edge maps.
-    It doesn't. It maps edges (keys) to read names (values)
+    This function mapes edges (keys) to the read names (values) in a dictionary.
     :return:
     """
     read_info = {}
@@ -342,15 +319,11 @@ def read_name_dict():
                 else:
                     if x not in new_dict:
                         new_dict[x] = None
-    # print(f'NB502113:716:HMH2GBGXK:1:12203:19905:11061A:{read_info.get("NB502113:716:HMH2GBGXK:1:12203:19905:11061A")}')
-    # print(f'NB502113:716:HMH2GBGXK:1:12203:19905:11061B:{read_info.get("NB502113:716:HMH2GBGXK:1:12203:19905:11061B")}')
     return new_dict
 
 
 read_dict = read_name_dict()
 
-
-# print(read_dict)
 
 def create_edge_tally_dict(dictionary, paths):
     """
@@ -364,7 +337,6 @@ def create_edge_tally_dict(dictionary, paths):
     tally_dictionary = {}
     for i in paths:
         for j in i:
-            # print(j)
             tally = 0
             temp = create_edges(path_dict.get(j))
             for k in temp:
@@ -373,19 +345,6 @@ def create_edge_tally_dict(dictionary, paths):
                         tally = dictionary.get(k)
             tally_dictionary[j] = tally
     return tally_dictionary
-
-
-# edge_tally = create_edge_tally_dict(read_edges, get_path_names(separate_paths(pan_path)))
-
-# print(edge_tally)
-
-
-# print(read_dict.get((13054, 13055)))
-#
-# for i in create_edges(path_dict.get(hom_path[4])):
-#     print(i)
-#     print(read_dict.get(i))
-#
 
 
 def num_edges(path):
@@ -409,7 +368,7 @@ count_table = {}
 def group_paths(paths):
     """
     This function takes a list of homology arm paths and groups the corresponding reference paths (over the
-    homology arm path range) together. If either the homology arm or the reference path is not found to have zero
+    homology arm path range) together. If either the homology arm or the reference path is found to have zero
     edges, it is NOT grouped. The list is in the form [homology arm path, reference path].
     :param paths:
     :return:
@@ -438,13 +397,10 @@ def group_paths(paths):
                             temp3[1].append(j)
             read_table[temp3[0]] = temp3[1]
             count_table[temp3[0]] = len(temp3[1])
-    # print(read_table)
     return grouped_paths
 
 
 paths_for_coverage = group_paths(hom_path)
-
-# print(count_table)
 
 
 def tally_reads_in_path(path):
@@ -481,17 +437,10 @@ cov_list = make_coverage_table(paths_for_coverage)
 sorted_cov_list = sorted(cov_list, key=lambda row: row[1], reverse=True)
 
 
-# print(f"homology_arm_34659+:")
-# print(path_dict.get("homology_arm_34659+"))
-# print(create_edges(path_dict.get("homology_arm_34659+")))
-# print(f"ref_homology_arm_34659+")
-# print(path_dict.get("ref_homology_arm_34659+"))
-# print(create_edges(path_dict.get("ref_homology_arm_34659+")))
-
-
 def write_to_tsv(coverage_list):
     """
-    This function will take a list of coverage data and write it to a tsv file.
+    This function will take a list of coverage data and write it to a tsv file. It also writes a file containing information 
+    # mapping each read to the homology arms to which it maps, which is used for deubugging and for additional information.
     """
     with open(args.out_path, "wt") as tsv_file:
         tsv_writer = csv.writer(tsv_file, delimiter='\t')
