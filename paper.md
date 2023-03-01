@@ -12,6 +12,7 @@ authors:
 
 affiliations: 
     - name: Institution Name, Country
+      index: 1
 date: 15 February 2023
 bibliography: references.bib
 
