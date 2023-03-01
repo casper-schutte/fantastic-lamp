@@ -10,9 +10,9 @@ authors:
       affiliation: 1
       corresponding: true
 affiliations: 
-    - id: 1
-      name: Stellenbosch University
-      address: Stellenbosch, South Africa
+    - name: Stellenbosch University, South Africa
+      index: 1
+
 
 
 date: 15 February 2023
