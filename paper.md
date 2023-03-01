@@ -11,7 +11,7 @@ authors:
       corresponding: true/false
 
 affiliations: 
-    - name:
+    - name: Institution Name, Country
 date: 15 February 2023
 bibliography: references.bib
 
