@@ -5,10 +5,14 @@ tags:
   - etc
 authors:
   - name: Casper J. H. Schutte
-    orcid: 0000-0003-4245-6842
-    equal-contrib: true/false
-    affiliation: Institution Name, Country # Note: no index needed
-    corresponding: true/false
+
+[//]: # (    orcid: 0000-0003-4245-6842)
+
+[//]: # (    equal-contrib: true/false)
+
+[//]: # (    affiliation: Institution Name, Country # Note: no index needed)
+
+[//]: # (    corresponding: true/false)
 
 affiliations: 
   - name: Institution Name
