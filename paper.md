@@ -9,10 +9,12 @@ authors:
       equal-contrib: true/false
       affiliation: 1
       corresponding: true/false
-
 affiliations: 
-    - name: Institution Name, Country
-      index: 1
+    - id: 1
+      name: Institution Name
+      address: City, Country
+
+
 date: 15 February 2023
 bibliography: references.bib
 
