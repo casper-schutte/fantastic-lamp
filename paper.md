@@ -12,9 +12,9 @@ authors:
     corresponding: true
 
 affiliations: 
-  - name: Institution Name
+  - name: Institution Name, Country
     index: 1
-    location: Country
+
 date: 15 February 2023
 bibliography: references.bib
 
