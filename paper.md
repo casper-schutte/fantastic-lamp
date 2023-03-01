@@ -1,22 +1,24 @@
 ---
 title: 'FantasticLamp: a genome graph based pipeline for calculating the efficacy of genomic edits'
 tags:
-    - Python
-    - etc
+  - Python
+  - etc
 authors:
-    - name: Casper J. H. Schutte
-      orchid: 0000-0003-4245-6842
-      equal-contrib: true
-      affiliation: 1
-      corresponding: true
+  - name: Casper J. H. Schutte
+    orcid: 0000-0003-4245-6842
+    equal-contrib: true/false
+    affiliation: Institution Name, Country # Note: no index needed
+    corresponding: true/false
+
 affiliations: 
-    - name: Stellenbosch University, South Africa
-      index: 1
-
-
-
+  - name: Institution Name
+    index: 1
+    location: Country
 date: 15 February 2023
 bibliography: references.bib
+
+
+
 
 # Summary
 
