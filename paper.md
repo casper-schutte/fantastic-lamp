@@ -57,10 +57,6 @@ Also need to remember that this paper needs to be in the repo in the form of a m
 See example paper and references on JOSS website. 
 There are mandatory metadata that need to be included (created markdown doc, will push this doc when I make sure the fields are correct). 
 
-# Figures example
-
-[//]: # (![Caption for example figure.\label{fig:example}]&#40;figure.png&#41;)
-[//]: # (and referenced from text using \autoref{fig:example}.)
 
 # Acknowledgements
 
