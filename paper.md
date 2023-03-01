@@ -11,8 +11,8 @@ authors:
       corresponding: true/false
 affiliations: 
     - id: 1
-      name: Institution Name
-      address: City, Country
+      name: Stellenbosch University
+      address: Stellenbosch, South Africa
 
 
 date: 15 February 2023
