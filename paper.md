@@ -6,9 +6,9 @@ tags:
 authors:
     - name: Casper J. H. Schutte
       orchid: 0000-0003-4245-6842
-      equal-contrib: true/false
+      equal-contrib: true
       affiliation: 1
-      corresponding: true/false
+      corresponding: true
 affiliations: 
     - id: 1
       name: Stellenbosch University
