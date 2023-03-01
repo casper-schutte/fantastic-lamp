@@ -1,27 +1,32 @@
 ---
-title: 'FantasticLamp: a genome graph based pipeline for calculating the efficacy of genomic edits'
+
+title: 'Gala: A Python package for galactic dynamics'
 tags:
   - Python
-  - etc
+  - astronomy
+  - dynamics
+  - galactic dynamics
+  - milky way
 authors:
-  - name: Casper J. H. Schutte
-
-[//]: # (    orcid: 0000-0003-4245-6842)
-
-[//]: # (    equal-contrib: true/false)
-
-[//]: # (    affiliation: Institution Name, Country # Note: no index needed)
-
-[//]: # (    corresponding: true/false)
-
-affiliations: 
-  - name: Institution Name
-    index: 1
-    location: Country
-date: 15 February 2023
-bibliography: references.bib
-
-
+  - name: Adrian M. Price-Whelan
+    orcid: 0000-0000-0000-0000
+    equal-contrib: true
+    affiliation: "1, 2" # (Multiple affiliations must be quoted)
+  - name: Author Without ORCID
+    equal-contrib: true # (This is how you can denote equal contributions between multiple authors)
+    affiliation: 2
+  - name: Author with no affiliation
+    corresponding: true # (This is how to denote the corresponding author)
+    affiliation: 3
+affiliations:
+ - name: Lyman Spitzer, Jr. Fellow, Princeton University, USA
+   index: 1
+ - name: Institution Name, Country
+   index: 2
+ - name: Independent Researcher, Country
+   index: 3
+date: 13 August 2017
+bibliography: paper.bib
 
 
 # Summary
