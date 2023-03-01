@@ -4,16 +4,13 @@ tags:
     - Python
     - etc
 authors:
-    - name:
-      orchid:
+    - name: Casper J. H. Schutte
+      orchid: 0000-0003-4245-6842
       equal-contrib: true/false
-      affiliation:
-    - name:
-      orchid:
-      equal-contrib: true/false
-      affiliation:
-      corresponding: true
-affiliations:
+      affiliation: 1
+      corresponding: true/false
+
+affiliations: 
     - name:
 date: 15 February 2023
 bibliography: references.bib
