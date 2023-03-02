@@ -10,8 +10,20 @@ authors:
     equal-contrib: true
     affiliation: "1"
     corresponding: false
+authors:
+  - name: Ian Fiddes
+    orcid:
+    equal-contrib: true
+    affiliation: "1"
+    corresponding: false
+authors:
+  - name: Erik Garrison
+    orcid:
+    equal-contrib:
+    affiliation:
+    corresponding:
 affiliations:
-  - name: Stellenbosch University, South Africa
+  - name: Example University, Country
     index: 1
 date: 2 March 2023
 ---
