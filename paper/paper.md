@@ -8,20 +8,20 @@ authors:
   - name: Casper Schutte
     orcid: 0000-0003-4245-6842
     equal-contrib: true
-    affiliation: "1"
-    corresponding: true
+    affiliation:
+    corresponding: false
   - name: Ian Fiddes
-    orcid: 0000
+    orcid: 0000-0002-1580-7443
     equal-contrib: true
-    affiliation: "1"
+    affiliation:
     corresponding: false
   - name: Erik Garrison
-    orcid: 0000
+    orcid: 0000-0003-3821-631X
     equal-contrib: true
     affiliation: 1
-    corresponding: false
+    corresponding: true
 affiliations:
-  - name: Example University, Country
+  - name: The University of Tennessee Health Science Center, United States
     index: 1
 date: 2 March 2023
 ---
