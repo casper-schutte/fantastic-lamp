@@ -10,13 +10,11 @@ authors:
     equal-contrib: true
     affiliation: "1"
     corresponding: false
-authors:
   - name: Ian Fiddes
     orcid:
     equal-contrib: true
     affiliation: "1"
     corresponding: false
-authors:
   - name: Erik Garrison
     orcid:
     equal-contrib:
