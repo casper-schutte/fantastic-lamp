@@ -9,17 +9,17 @@ authors:
     orcid: 0000-0003-4245-6842
     equal-contrib: true
     affiliation: "1"
-    corresponding: false
+    corresponding: true
   - name: Ian Fiddes
-    orcid:
+    orcid: 0000
     equal-contrib: true
     affiliation: "1"
     corresponding: false
   - name: Erik Garrison
-    orcid:
-    equal-contrib:
-    affiliation:
-    corresponding:
+    orcid: 0000
+    equal-contrib: true
+    affiliation: 1
+    corresponding: false
 affiliations:
   - name: Example University, Country
     index: 1
