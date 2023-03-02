@@ -1,5 +1,4 @@
 ---
-
 title: 'FantasticLamp: a genome graph based pipeline for calculating the efficacy of genomic edits'
 tags:
   - Python
@@ -10,11 +9,9 @@ authors:
     equal-contrib: true
     affiliation: 1
     corresponding: true
-
 affiliations: 
-  - name: Institution Name, Country
+  - name: Stellenbosch University, South Africa
     index: 1
-
 date: 15 February 2023
 bibliography: references.bib
 
