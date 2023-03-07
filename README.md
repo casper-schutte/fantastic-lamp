@@ -1,6 +1,6 @@
 # Fantastic-lamp:
 
-Project Description:
+## Project Description:
 This project aims to evaluate the success of genome editing by measuring the coverage of reads mapping to edited 
 regions compared to the corresponding reference sequence. This is accomplished by aligning reads from the edited genome
 to a genome graph built from the reference and intended edits. The pipeline can simultaneously calculate the coverage 
@@ -8,10 +8,16 @@ of multiple populations, making it an efficient tool for quantifying the success
 multiple edits. The efficacy of the edits can be inferred from the output, which is a TSV file containing the list of 
 intended edits, their homology coverage, and their reference coverage. 
 
-Usage:
+## Installation and Dependencies:
+This pipeline is initiated with the "find_coverage.sh" script from the command line and requires no explicit installation.
+All the dependencies can be installed with Conda from the "environment.yaml" file.
+This pipeline was developed and tested on 
+Ubuntu 20.04 with Python 3.10, although earlier versions of Python may also be compatible. For more information about 
+the system configuration that has been confirmed to run this pipeline correctly, please refer to the "Test.yml" file in
+the /workflows directory. 
 
 
-Descriptions of steps and files used by the pipeline:
+## Descriptions of steps and files used by the pipeline:
 
 1) Homology arms (hom_arms) and the reference sequence for each homology arm (ref_hom_arms)
 are extracted from DesignLibraryDetails_ODD126.withEditWindow.csv and combined into a single file: ODD126_ref_and_hom_arms.fa
@@ -36,8 +42,4 @@ hom_arms and ref_hom_arms are counted (from the .gaf file) and put into a dictio
 edge. Coverage for a path calculated as the sum of the number of reads mapping to an edge in the path divided by 
 the number of edges in the path. These coverages are written to a .tsv file.
 
-Dependencies:
-A list of dependencies can be found in the "environment.yaml" file. This pipeline was developed and tested on 
-Ubuntu 20.04 with Python 3.10, although earlier versions of Python may also be compatible. For more information about 
-the system configuration that has been confirmed to run this pipeline correctly, please refer to the "Test.yml" file in
-the /workflows directory.
+
