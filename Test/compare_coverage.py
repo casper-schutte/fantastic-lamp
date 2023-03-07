@@ -105,9 +105,7 @@ def get_path_names(paths):
 
 def create_node_dict(path):
     """
-    creates a dictionary with the node IDs as keys and the path names as values. If it detects that a node is shared
-    between a homology-arm path and a corresponding reference-homology-arm path, it will add the path name "shared" to
-    the node in this dictionary.
+    creates a dictionary with the node IDs as keys and the path names as values.
     :param path:
     :return:
     """
@@ -119,11 +117,7 @@ def create_node_dict(path):
                 shared_score += 1
             if j.startswith("ref_h"):
                 shared_score += 1
-        if shared_score < 2:
-            temp_dict[i[0]] = i[1]
-        else:
-            # i[1].append("shared")
-            temp_dict[i[0]] = i[1]
+        temp_dict[i[0]] = i[1]
     return temp_dict
 
 
@@ -193,7 +187,7 @@ def create_reverse_dict(dictionary):
     The output is a dictionary where the keys are paths and the values are a list of nodes. This dictionary has far
     fewer entries than the input dictionary, making it much more efficient to look up the nodes for a given path.
     :param dictionary:
-    :return:
+    :return: dictionary {path; [list of nodes]}
     """
     graph_dict = {}
     for k, v in dictionary.items():
@@ -208,10 +202,10 @@ def create_reverse_dict(dictionary):
 
 def create_edges(path):
     """
-    This function takes a list of nodes and creates a list of edges. This function will be called to
-    create the edges of the paths so that they can be compared to the edges that had reads mapped to them.
+    This function takes a list of nodes for a path and creates a list of edges in that path. This function will be
+    called to create the edges of the paths so that they can be compared to the edges that had reads mapped to them.
     :param path:
-    :return:
+    :return: list of edges
     """
     edges = []
     if path is not None:
@@ -229,6 +223,8 @@ def create_shared_edges(hpaths):
     This function takes each homology arm, and it's corresponding reference homology arm, and creates a list of edges
     that are shared between the two paths. This new list can be checked against to exclude shared edges further down
     the line.
+    :param list of homology arm paths, hpaths:
+    :return: list of shared edges
     """
     counter = 0
     ref_edges = []
@@ -249,7 +245,7 @@ def create_edge_tally_dict(dictionary, paths):
     to them.
     :param dictionary:
     :param paths:
-    :return:
+    :return: dictionary {path name; number of valid edges}
     """
     tally_dictionary = {}
     for i in paths:
@@ -267,7 +263,7 @@ def tally_reads_in_path(path):
     """
     This function takes a path and returns the number of edges in the path that had reads mapped to them.
     :param path:
-    :return:
+    :return: number of edges
     """
     return edge_tally[path]
 
@@ -291,8 +287,8 @@ def group_paths(paths):
     This function takes a list of homology arm paths and groups the corresponding reference paths (over the
     homology arm path range) together. If either the homology arm or the reference path is not found to have zero
     edges, it is NOT grouped. The list is in the form [homology arm path, reference path].
-    :param paths:
-    :return:
+    :param list of homology arm paths:
+    :return: list in the form [homology arm path, reference path]
     """
     grouped_paths = []
     for hpath in paths:
@@ -303,10 +299,10 @@ def group_paths(paths):
 
 def make_coverage_table(path_ids):
     """
-    This function will take a list of path names and return a table of the coverage of each path.
-    Format of the table is to be decided.
-    :param path_ids:
-    :return:
+    This function will take a list of path names and return a table containing the coverage
+    (and associated information) of each path.
+    :param list of path_ids:
+    :return: coverage list
     """
     coverage_list = []
     # this list will be in the form: [[hom_arm_name, hom_arm_coverage, ref_subpath_coverage, #_of_hom_arm_edges,
@@ -322,7 +318,7 @@ def make_coverage_table(path_ids):
 
 def write_to_tsv(coverage_list):
     """
-    This function will take a list of coverage data and write it to a tsv file.
+    This function takes a list of coverage data and writes it to a tsv file.
     """
     with open(args.out_path, "wt") as tsv_file:
         tsv_writer = csv.writer(tsv_file, delimiter='\t', lineterminator='\n')
