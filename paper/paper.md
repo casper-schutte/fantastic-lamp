@@ -38,8 +38,8 @@ This pipeline aims to provide a quantitative measure of the success of each geno
 # Statement of need
 
 n the field of genome engineering, researchers often perform genomic edits in cells, such as CRISPR/Cas9, TALEN, and ZNF-based systems, to study gene functions and to create new cell lines [@gaj2013zfn].
-However, these edits may not always be successful, and it may be challenging to identify and quantify the success rate of these edits in large-scale data sets (ref?).
-Compared to linear alignment methods, genome graphs can provide a more accurate and comprehensive view of the relationships between sequences, and by using this method, one can identify and quantify the success rate of genomic edits.
+However, these edits may not always be successful, and it may be challenging to identify and quantify the success rate of these edits in large-scale data sets,[@guell2014genome],[@van2020delivery]
+Compared to linear alignment methods, genome graphs can provide a more accurate and comprehensive view [@garrison2018variation] of the relationships between sequences [@paten2017genome], and by using this method, one can identify and quantify the success rate of genomic edits.
 FantasticLamp is a pipeline that consists of a bash script that can be initiated from the command line.
 The bash script calls two Python scripts and (the bioinformatics tools) vg, odgi, and minimap2 (refs. and very short descriptions?).
 
