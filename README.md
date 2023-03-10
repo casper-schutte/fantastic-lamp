@@ -32,7 +32,6 @@ indexed -> yeast+edits.og.gfa.gcsa
 6) The file Data_names.txt contains the names of the files which contain the sequencing reads. They 
 are in .fastq.gz format. The script can handle paired-end reads. This can be changed in the bash script (the files need to be named appropriately)
 This file is iterated over and for each line (file) the following steps (7 & 8) are executed:
-
 7) The reads from both files are mapped onto the graph (yeast+edits.og.gfa.xg), creating "filename".gaf
 8) The python script "compare_coverage.py" is called with the .gaf file and the yeast+edits.og file as input.
 From the yeast+edits.og file, a dictionary is created mapping node_id to path names. From this dictionary, homology arm
