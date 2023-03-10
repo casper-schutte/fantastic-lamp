@@ -16,6 +16,28 @@ Ubuntu 20.04 with Python 3.10, although earlier versions of Python may also be c
 the system configuration that has been confirmed to run this pipeline correctly, please refer to the "Test.yml" file in
 the /workflows directory. 
 
+## Verification and testing:
+The following files are strictly necessary:
+- DesignLibraryDetails_ODD126.withEditWindow.csv
+- Data_names.txt
+- environment.yaml
+- ref_and_mt.fna 
+- simple_test.fastq.gz
+
+Copy the following scripts into the data folder:
+- find_coverage.sh
+- compare_coverage_read_info.py
+
+ODD126_augmented_CB39.fasta is not strictly necessary, but there will be an error message 
+if the pipeline does not find it. However, the pipeline will still run correctly, as this test 
+does not include reads from a vector plasmid sequence.
+
+The pipeline needs to be run with Conda
+Install deps:
+conda env update --file environment.yaml
+
+Run pipeline: (Use this exact command)
+conda run -n fantastic-lamp bash find_coverage.sh
 
 ## Descriptions of steps and files used by the pipeline:
 
@@ -41,4 +63,12 @@ hom_arms and ref_hom_arms are counted (from the .gaf file) and put into a dictio
 edge. Coverage for a path calculated as the sum of the number of reads mapping to an edge in the path divided by 
 the number of edges in the path. These coverages are written to a .tsv file.
 
-
+## Compiling the paper:
+- Download paper.md and references.bib
+- In the same folder, run the following command:
+- docker run --rm \
+    --volume $PWD/paper:/data \
+    --user $(id -u):$(id -g) \
+    --env JOURNAL=joss \
+    openjournals/inara
+- This should create the paper.pdf
