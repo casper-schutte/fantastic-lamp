@@ -107,26 +107,14 @@ vg index -p -g yeast+edits.og.gfa.gcsa -t 16 yeast+edits.og.gfa.xg
 #fi
 
 
-if [ "$1" == "-t" ]; then
-  cat Data_names.txt | while read -r line; do
-    # IMPORTANT: Using this pipeline on paired-end reads takes some tinkering, look at the naming convention in the
-    # line under "paired-end mode". If your reads are called reads1_001.fastq.gz and reads2_001.fastq.gz, Data_names.txt
-    # should contain only "reads", as the rest is added on in the line below.
-    # Paired-end mode:
-    #vg map -x yeast+edits.og.gfa.xg -g yeast+edits.og.gfa.gcsa -t 16 -% -f "$line"1_001.fastq.gz -f "$line"2_001.fastq.gz| pv -l >"$line".gaf
-    vg map -x yeast+edits.og.gfa.xg -g yeast+edits.og.gfa.gcsa -t 16 -% -f "$line".fastq.gz | pv -l >"$line".gaf
-    python3 compare_coverage_read_info.py --gaf-path "$line".gaf --out-path "$line".tsv --og-path "yeast+edits.og"
-    pytest
-    done
-else
-  cat Data_names.txt | while read -r line; do
-    # IMPORTANT: Using this pipeline on paired-end reads takes some tinkering, look at the naming convention in the
-    # line under "paired-end mode". If your reads are called reads1_001.fastq.gz and reads2_001.fastq.gz, Data_names.txt
-    # should contain only "reads", as the rest is added on in the line below.
-    # Paired-end mode:
-    #vg map -x yeast+edits.og.gfa.xg -g yeast+edits.og.gfa.gcsa -t 16 -% -f "$line"1_001.fastq.gz -f "$line"2_001.fastq.gz| pv -l >"$line".gaf
-    vg map -x yeast+edits.og.gfa.xg -g yeast+edits.og.gfa.gcsa -t 16 -% -f "$line".fastq.gz | pv -l >"$line".gaf
-    python3 compare_coverage_read_info.py --gaf-path "$line".gaf --out-path "$line".tsv --og-path "yeast+edits.og"
-  done
-fi
+
+cat Data_names.txt | while read -r line; do
+  # IMPORTANT: Using this pipeline on paired-end reads takes some tinkering, look at the naming convention in the
+  # line under "paired-end mode". If your reads are called reads1_001.fastq.gz and reads2_001.fastq.gz, Data_names.txt
+  # should contain only "reads", as the rest is added on in the line below.
+  # Paired-end mode:
+  #vg map -x yeast+edits.og.gfa.xg -g yeast+edits.og.gfa.gcsa -t 16 -% -f "$line"1_001.fastq.gz -f "$line"2_001.fastq.gz| pv -l >"$line".gaf
+  vg map -x yeast+edits.og.gfa.xg -g yeast+edits.og.gfa.gcsa -t 16 -% -f "$line".fastq.gz | pv -l >"$line".gaf
+  python3 compare_coverage_read_info.py --gaf-path "$line".gaf --out-path "$line".tsv --og-path "yeast+edits.og"
+done
 echo "Done!"
