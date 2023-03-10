@@ -66,10 +66,11 @@ the number of edges in the path. These coverages are written to a .tsv file.
 ## Compiling the paper:
 - Download paper.md and references.bib
 - In the same folder, run the following command:
----
+'''
 docker run --rm \
     --volume $PWD/paper:/data \
     --user $(id -u):$(id -g) \
     --env JOURNAL=joss \
     openjournals/inara
+'''
 - This should create the paper.pdf
