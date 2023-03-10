@@ -35,3 +35,4 @@ jobs:
         run: |
           cd Test
           conda run -n fantastic-lamp bash ../find_coverage.sh -t
+          conda run -n fantastic-lamp pytest
