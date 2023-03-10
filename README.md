@@ -17,14 +17,14 @@ the system configuration that has been confirmed to run this pipeline correctly,
 the /workflows directory. 
 
 ## Verification and testing:
-The following files are strictly necessary:
+The following files from the /Test folder are strictly necessary:
 - DesignLibraryDetails_ODD126.withEditWindow.csv
 - Data_names.txt
 - environment.yaml
 - ref_and_mt.fna 
 - simple_test.fastq.gz
 
-Copy the following scripts into the data folder:
+Copy the following scripts from the main page into the data folder:
 - find_coverage.sh
 - compare_coverage_read_info.py
 
