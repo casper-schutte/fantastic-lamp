@@ -34,11 +34,19 @@ does not include reads from a vector plasmid sequence.
 
 The pipeline needs to be run with Conda
 Install deps:
+```
 conda env update --file environment.yaml
-
+```
+The Python script "compare_coverage_read_info.py" and the bash script "find_coverage.sh" need to be copied to the 
+Test folder. In the main folder, run the following command:
+```
+cp compare_coverage_read_info.py find_coverage.sh Test/
+```
 Run pipeline: (Use this exact command)
+```
 conda run -n fantastic-lamp bash find_coverage.sh
 
+```
 ## Descriptions of steps and files used by the pipeline:
 
 1) Homology arms (hom_arms) and the reference sequence for each homology arm (ref_hom_arms)
