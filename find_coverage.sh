@@ -6,21 +6,28 @@
 # If you experience an error regarding segmentation faults, jemalloc is to blame and the path
 # needs to be corrected. If the error persists, good luck.
 env LD_PRELOAD=libjemalloc.so.2 PYTHONPATH=lib python3 -c 'import odgi'
-if [ "$1" == "-t" ]; then
-  export LD_PRELOAD=/lib/x86_64-linux-gnu/libjemalloc.so.2
-else
-  export LD_PRELOAD=/home/ec2-user/.conda/pkgs/libjemalloc-5.2.1-h9c3ff4c_6/lib/libjemalloc.so.2
-fi
+export LD_PRELOAD=/lib/x86_64-linux-gnu/libjemalloc.so.2
+# IMPORTANT: Any errors regarding "segmentation fault" and/or "core dumped" can be assumed to arise from
+# not exporting jemalloc correctly, normally when it is not installed or the path is incorrect.
+
+#if [ "$1" == "-t" ]; then
+#  export LD_PRELOAD=/lib/x86_64-linux-gnu/libjemalloc.so.2
+#else
+#  export LD_PRELOAD=/lib/x86_64-linux-gnu/libjemalloc.so.2
+##  export LD_PRELOAD=/home/ec2-user/.conda/pkgs/libjemalloc-5.2.1-h9c3ff4c_6/lib/libjemalloc.so.2
+#fi
 
 
 
 # This script requires as input:
 # 1) a design library csv file (DesignLibraryDetails_ODD126.csv)
 # 2) a reference genome with mtDNA sequence added (ref_and_mt.fna)
-# 3) the python script compare_coverage.py (in the same directory as this script)
+# 3) the python script compare_coverage_read_info.py (in the same directory as this script)
 # 4) a text document (data_names.txt) containing the names of the files containing the reads, without the .fastq.gz
-# extension eg: "GE00001631-DOT_H11_S191_R2_001.fastq.gz" should be "GE00001631-DOT_H11_S191_R"
-# 5) now also requires a fasta file containing the sequences of the plasmids used in the experiment.
+# extension eg: "GE00001631-DOT_H11_S191_R2_001.fastq.gz" should be "GE00001631-DOT_H11_S191_R2_001"
+# 5) a fasta file containing the sequences of the plasmids used in the experiment, "ODD126_augmented_CB39.fasta"
+#     the pipeline will still work without it, but it is very useful for pulling away the reads that map to the
+#     unintegrated plasmid, so that they don't incorrectly map to the reference or homology arms.
 # The output is in the same folder as the original files,
 
 # 1) Make static graphs: (from commands.sh)
@@ -30,34 +37,40 @@ fi
 # Note for future use: can if the design library is different, create a new variable containing the appropriate column
 # numbers.
 
-if [ "$1" == "-t" ]; then
-  cat hom_arms_test.fa > ODD126_homology_arms.fa
-  cat ref_arms_test.fa  > ref_subpaths.fa
-else
-  cat DesignLibraryDetails_ODD126.withEditWindow.csv | awk -F',' '{print ">homology_arm_"$1; print $54;}' | tr -d \- > ODD126_homology_arms.fa
-  cat DesignLibraryDetails_ODD126.withEditWindow.csv | awk -F',' '{print ">ref_homology_arm_"$1; print $53;}' | tr -d \- > ref_subpaths.fafi
-fi
+#if [ "$1" == "-t" ]; then
+#  cat hom_arms_test.fa > ODD126_homology_arms.fa
+#  cat ref_arms_test.fa  > ref_subpaths.fa
+#else
+#  cat DesignLibraryDetails_ODD126.withEditWindow.csv | awk -F',' '{print ">homology_arm_"$1; print $54;}' | tr -d \- > ODD126_homology_arms.fa
+#  cat DesignLibraryDetails_ODD126.withEditWindow.csv | awk -F',' '{print ">ref_homology_arm_"$1; print $53;}' | tr -d \- > ref_subpaths.fa
+#fi
 
+cat DesignLibraryDetails_ODD126.withEditWindow.csv | awk -F',' '{print ">homology_arm_"$1; print $54;}' | tr -d \- > ODD126_homology_arms.fa
+cat DesignLibraryDetails_ODD126.withEditWindow.csv | awk -F',' '{print ">ref_homology_arm_"$1; print $53;}' | tr -d \- > ref_subpaths.fa
 
 # Combine homology arms and reference over the range of the homology arms into one FASTA file.
 cat ref_subpaths.fa ODD126_homology_arms.fa > ODD126_ref_and_hom_arms.fa
 
-if [ "$1" == "-t" ]; then
-  ref_and_mt=tiny_genome.fa
-else
-  ref_and_mt=ref_and_mt.fna
-fi
+#if [ "$1" == "-t" ]; then
+#  ref_and_mt=tiny_genome.fa
+#else
+#  ref_and_mt=ref_and_mt.fna
+#fi
+
+ref_and_mt=ref_and_mt.fna
 
 # map the homology arms against the reference
 minimap2 -k 19 -w 1 -cx sr $ref_and_mt ODD126_ref_and_hom_arms.fa >ODD126_ref_and_hom_arms.paf
 
 # combine the inputs to seqwish in a single file (and add plasmid sequences). In the test, the
 # augmented FASTA file is not used.
-if [ "$1" == "-t" ]; then
-  cat $ref_and_mt ODD126_ref_and_hom_arms.fa >yeast+edits.fa
-else
-  cat $ref_and_mt ODD126_ref_and_hom_arms.fa ODD126_augmented_CB39.fasta >yeast+edits.fa
-fi
+#if [ "$1" == "-t" ]; then
+#  cat $ref_and_mt ODD126_ref_and_hom_arms.fa >yeast+edits.fa
+#else
+#  cat $ref_and_mt ODD126_ref_and_hom_arms.fa ODD126_augmented_CB39.fasta >yeast+edits.fa
+#fi
+
+cat $ref_and_mt ODD126_ref_and_hom_arms.fa ODD126_augmented_CB39.fasta >yeast+edits.fa
 # induce the variation graph
 seqwish -g yeast+edits.gfa -s yeast+edits.fa -p ODD126_ref_and_hom_arms.paf -P
 
@@ -76,20 +89,32 @@ vg index -p -g yeast+edits.og.gfa.gcsa -t 16 yeast+edits.og.gfa.xg
 
 
 
-if [ "$1" == "-t" ]; then
-  # This one is for testing
-  vg map -x yeast+edits.og.gfa.xg -g yeast+edits.og.gfa.gcsa -t 16 -% -f "simple_test".fastq.gz | pv -l >"simple_test".gaf
-  python3 compare_coverage.py --gaf-path "simple_test".gaf --out-path "simple_test".tsv --og-path "yeast+edits.og"
-  pytest
-else
-  cat Data_names.txt | while read -r line; do
-    # One of the lines below handles paired-end reads, and the other does not. Pay attention to the names
-    # of the FASTQ files and the names of the files in Data_names.txt
-    #vg map -x yeast+edits.og.gfa.xg -g yeast+edits.og.gfa.gcsa -t 16 -% -f "$line"1_001.fastq.gz -f "$line"2_001.fastq.gz| pv -l >"$line".gaf
-    vg map -x yeast+edits.og.gfa.xg -g yeast+edits.og.gfa.gcsa -t 16 -% -f "$line"1_001.fastq.gz | pv -l >"$line".gaf
-    python3 compare_coverage_read_info.py --gaf-path "$line".gaf --out-path "$line".tsv --og-path "yeast+edits.og"
-  done
-fi
+#if [ "$1" == "-t" ]; then
+#  # This one is for testing
+#  vg map -x yeast+edits.og.gfa.xg -g yeast+edits.og.gfa.gcsa -t 16 -% -f "simple_test".fastq.gz | pv -l >"simple_test".gaf
+#  python3 compare_coverage.py --gaf-path "simple_test".gaf --out-path "simple_test".tsv --og-path "yeast+edits.og"
+#  pytest
+#else
+#  cat Data_names.txt | while read -r line; do
+#    # One of the lines below handles paired-end reads, and the other does not. Pay attention to the names
+#    # of the FASTQ files and the names of the files in Data_names.txt
+#    #vg map -x yeast+edits.og.gfa.xg -g yeast+edits.og.gfa.gcsa -t 16 -% -f "$line"1_001.fastq.gz -f "$line"2_001.fastq.gz| pv -l >"$line".gaf
+##    vg map -x yeast+edits.og.gfa.xg -g yeast+edits.og.gfa.gcsa -t 16 -% -f "$line"1_001.fastq.gz | pv -l >"$line".gaf
+#    vg map -x yeast+edits.og.gfa.xg -g yeast+edits.og.gfa.gcsa -t 16 -% -f "$line".fastq.gz | pv -l >"$line".gaf
+#
+#    python3 compare_coverage_read_info.py --gaf-path "$line".gaf --out-path "$line".tsv --og-path "yeast+edits.og"
+#  done
+#fi
 
 
+
+cat Data_names.txt | while read -r line; do
+  # IMPORTANT: Using this pipeline on paired-end reads takes some tinkering, look at the naming convention in the
+  # line under "paired-end mode". If your reads are called reads1_001.fastq.gz and reads2_001.fastq.gz, Data_names.txt
+  # should contain only "reads", as the rest is added on in the line below.
+  # Paired-end mode:
+  #vg map -x yeast+edits.og.gfa.xg -g yeast+edits.og.gfa.gcsa -t 16 -% -f "$line"1_001.fastq.gz -f "$line"2_001.fastq.gz| pv -l >"$line".gaf
+  vg map -x yeast+edits.og.gfa.xg -g yeast+edits.og.gfa.gcsa -t 16 -% -f "$line".fastq.gz | pv -l >"$line".gaf
+  python3 compare_coverage_read_info.py --gaf-path "$line".gaf --out-path "$line".tsv --og-path "yeast+edits.og"
+done
 echo "Done!"
