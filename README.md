@@ -73,7 +73,7 @@ the number of edges in the path. These coverages are written to a .tsv file.
 
 ## Compiling the paper:
 - Download paper.md and references.bib
-- In the main folder (containing the /paper directory, run the following command:
+- In the main folder (containing the /paper directory), run the following command:
 ```
 docker run --rm \
     --volume $PWD/paper:/data \
