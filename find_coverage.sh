@@ -7,8 +7,10 @@
 # needs to be corrected. If the error persists, good luck.
 env LD_PRELOAD=libjemalloc.so.2 PYTHONPATH=lib python3 -c 'import odgi'
 export LD_PRELOAD=/lib/x86_64-linux-gnu/libjemalloc.so.2
+
 # IMPORTANT: Any errors regarding "segmentation fault" and/or "core dumped" can be assumed to arise from
 # not exporting jemalloc correctly, normally when it is not installed or the path is incorrect.
+# You may need to run: apt install libjemalloc-dev if the problem persists.
 
 #if [ "$1" == "-t" ]; then
 #  export LD_PRELOAD=/lib/x86_64-linux-gnu/libjemalloc.so.2
