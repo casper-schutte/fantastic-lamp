@@ -19,3 +19,8 @@ conda env update --file environment.yaml
 
 Run pipeline: (Use this exact command)
 conda run -n fantastic-lamp bash find_coverage.sh
+
+IMPORTANT: Any errors regarding "segmentation fault" and/or "core dumped" can be assumed to arise from
+not exporting jemalloc correctly, normally when it is not installed or the path is incorrect.
+You may need to run:
+sudo apt install libjemalloc-dev if the problem persists.
