@@ -324,7 +324,9 @@ def write_to_tsv(coverage_list):
         tsv_writer = csv.writer(tsv_file, delimiter='\t', lineterminator='\n')
         tsv_writer.writerow(["Homology arm", "Homology arm coverage", "Reference coverage", "Homology arm edges",
                              "Count for homology arm", "Reference edges", "Count for reference"])
+
         for i in coverage_list:
+            i[0] = i[0][:-1]
             tsv_writer.writerow(i)
 
 
