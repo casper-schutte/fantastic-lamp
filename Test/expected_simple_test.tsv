@@ -1,8 +1,14 @@
 Homology arm	Homology arm coverage	Reference coverage	Homology arm edges	Count for homology arm	Reference edges	Count for reference
+homology_arm_9+	5.0	1.0	1	5	2	2
+homology_arm_12+	4.0	1.0	2	8	2	2
 homology_arm_4+	2.0	1.0	2	4	1	1
-homology_arm_2+	1.0	2.0	2	2	1	2
+homology_arm_13+	2.0	1.0	1	2	2	2
+homology_arm_10+	2.0	1.0	2	4	2	2
 homology_arm_3+	1.0	0.0	2	2	1	0
+homology_arm_2+	1.0	2.0	2	2	1	2
+homology_arm_11+	1.0	3.0	1	1	2	6
 homology_arm_5+	1.0	1.0	2	2	1	1
-homology_arm_6+	0.0	0.0	2	0	1	0
 homology_arm_7+	0.0	0.0	2	0	1	0
+homology_arm_6+	0.0	0.0	2	0	1	0
+homology_arm_14+	0.0	4.0	2	0	2	8
 homology_arm_8+	0.0	1.0	2	0	1	1
