@@ -24,3 +24,10 @@ IMPORTANT: Any errors regarding "segmentation fault" and/or "core dumped" can be
 not exporting jemalloc correctly, normally when it is not installed or the path is incorrect.
 You may need to run:
 sudo apt install libjemalloc-dev if the problem persists.
+
+Visualising graph:
+To visualise the graph in BandageNG (https://github.com/asl/BandageNG), load the simple_test.og.gfa file.
+To label the nodes with their coverages and other information, BandageNG requires a CSV file. To create a CSV file
+from the TSV output, simply run the BASH script:
+convert_to_csv.sh
+in the /Test folder

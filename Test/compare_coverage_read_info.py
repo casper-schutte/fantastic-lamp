@@ -327,6 +327,8 @@ def write_to_tsv(coverage_list):
 
         for i in coverage_list:
             i[0] = i[0][:-1]
+            # This removes the trailing "+" in the names of the paths, which enables BandageNG to correctly label the
+            # nodes when visualising.
             tsv_writer.writerow(i)
 
 

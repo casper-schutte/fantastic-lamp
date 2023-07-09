@@ -72,13 +72,10 @@ edge. Coverage for a path calculated as the sum of the number of reads mapping t
 the number of edges in the path. These coverages are written to a .tsv file.
 
 ## Compiling the paper:
-- Download paper.md and references.bib
-- In the main folder (containing the /paper directory), run the following command:
+- Download the /paper/ folder. 
+- In the folder, run:
 ```
-docker run --rm \
-    --volume $PWD/paper:/data \
-    --user $(id -u):$(id -g) \
-    --env JOURNAL=joss \
-    openjournals/inara
+- make clean
+- make
 ```
-- This should create the paper.pdf
+This will compile the main.pdf
