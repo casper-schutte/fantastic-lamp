@@ -127,28 +127,28 @@ This integrated approach ensures a more accurate quantification of edit efficacy
 
 \section*{Implementation}
 \label{sec:implementation}
-Here we describe the steps and tools used in creating \textit{FantasticLamp}. 
+\section*{Implementation}
+\label{sec:implementation}
+Here we describe the steps and tools utilized in creating \textit{FantasticLamp}.
 
-Given a reference genome and reads sequenced from multiple edited populations, the pipeline uses a design library file---a table which contains the intended edits and reference sequences at the intended edit sites---to construct a genome graph.
+Given a reference genome and reads sequenced from multiple edited populations, the pipeline employs a design library file---a table containing the intended edits and reference sequences at the intended edit sites---to construct a genome graph.
 
-The genome graph is made up of the reference genome, the intended edit sequences (`homology arms', or `edit homology arms'), and the reference sequences at the edit sites (`reference homology arms').
-The construction of the graph involves taking the homology arms and reference homology arms and mapping them to the reference genome using \textit{minimap2} \citep{li2018minimap2}.
-%Minimap: 
-The inclusion of the reference homology arms is what allows the pipeline to calculate the relative coverage (and thus the edit efficiency) by comparing the edit homology arm coverage to the reference homology arm coverage.
+The genome graph consists of the reference genome, the intended edit sequences (referred to as `homology arms' or `edit homology arms'), and the reference sequences at the edit sites (termed `reference homology arms').
+The core structure of the graph is an alignment of homology and reference homology arms onto the reference genome, which we complet using \textit{minimap2} \citep{li2018minimap2}.
+The inclusion of the reference homology arms enables the pipeline to calculate the relative coverage, thereby determining the edit efficiency by comparing the coverage of edit homology arms to that of the reference homology arms.
 
-A variation graph is then induced by \textit{seqwish} \citep{garrison2023unbiased} that represents the relationships between the reference genome and both groups of homology arms (reference and edit).
-Before the graph is constructed, the nodes are 'chopped' into segments smaller than 256 base pairs and then the graph is sorted using \textit{odgi} \citep{guarracino2022odgi}.
-These steps are necessary in order for the graph to then be constructed, again using \textit{odgi}. 
+Then, we construct the graph itself.
+A variation graph, representing the relationships between the reference genome and both groups of homology arms (reference and edit), is then induced by \textit{seqwish} \citep{garrison2023unbiased}, which combines the input sequences and the alignments into a graph (in GFAv1 format).
+After the graph's construction, the nodes are 'chopped' into segments smaller than 256 base pairs to enable efficient indexing and read mapping, and the graph is sorted using \textit{odgi} \citep{guarracino2022odgi}.
 
-The graph is converted into a format that is more efficient and finally indexed, both steps using \textit{vg} \citep{garrison2018variation}.
-The pipeline then maps reads from the edited populations to this graph using \textit{vg}, creating a GAF (Gene Annotation Format) file representing the alignment.
-A Python script is called to parse the alignment file and calculate the coverage of the homology arms compared to the reference homology arms.
-The output of this pipeline is a coverage table in the form of a TSV file, which displays the name of each intended edit sequence along with the homology arm coverage and reference homology arm coverage providing a quantitative measure of the efficacy of each edit.
-  
+The pipeline then maps reads from the edited populations to this graph using \textit{vg} \citep{garrison2018variation}, generating a GAF (Gene Annotation Format) file to represent the alignment.
+A Python script parses the alignment file to calculate the coverage of the homology arms relative to the reference homology arms.
+We output a coverage table (in TSV), displaying each intended edit sequence alongside the corresponding homology arm coverage and reference homology arm coverage, thus quantifying the efficacy of each edit.
 
-This allows \textit{FantasticLamp} to simultaneously quantify the efficacy of edits in multiple edited populations, which can be used to test novel editing methods as well as to verify current methods in experiments that involve genomic edits.
-By using reads aligned to a graph instead of linear alignment, \textit{FantasticLamp} can avoid reference bias, making it a useful tool for researchers in the field of genome engineering and other related fields who wish to precisely quantify genome edit states.\\
-A flow diagram of the steps and files used in the \textit{FantasticLamp} pipeline can be seen in Figure \ref{fig:images}(D).
+\textit{FantasticLamp} thus enables the simultaneous quantification of edit efficacy across multiple edited populations, serving as a valuable tool for both the testing of novel editing methods and the verification of current methods in experiments involving genomic edits.
+By aligning reads to a graph instead of employing linear alignment, \textit{FantasticLamp} circumvents reference bias and will allow for precise quantification of genome edit states even in the case of contexts where many simultaneous edits are applied in close proximity.
+%in genome engineering and related fields who seek precise quantification of genome edit states. %\\
+A flow diagram detailing the steps and files used in the \textit{FantasticLamp} pipeline is presented in Figure \ref{fig:images}D.
 
 
 %We will discuss the tools used, not in extreme detail but enough to justify and explain their use.
