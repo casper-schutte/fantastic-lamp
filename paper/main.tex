@@ -86,7 +86,8 @@ $^\ast$To whom correspondence should be addressed. \\
 \textbf{Motivation:}
 Accurately calculating the efficacy of genomic edits is crucial to understanding the performance of the editing techniques, in order to optimize methods and improve the success rate of the edits.
 Additionally, by understanding the success rate of genomic edits, researchers can identify any potential problems or limitations of the techniques and work to overcome them.
-This can help to improve the accuracy and precision of the editing methods, which is essential for many applications, such as creating genetically engineered cells for therapeutic purposes, understanding gene functions, and studying genetic diversity in a population of cells. Current linear alignment methods for quantifying the success of edits suffer from reference bias and fail to capture the complexity involved when dealing with multiple edit states.\\
+This can help to improve the accuracy and precision of the editing methods, which is essential for many applications, such as creating genetically engineered cells for therapeutic purposes, understanding gene functions, and studying genetic diversity in a population of cells.
+Current linear alignment methods for quantifying the success of edits exhibit reference bias and cannot model complex mixed edit states.\\
 % Mention current methods and why there is need for better methods.
 \textbf{Results:}
 We design \textit{FantasticLamp}, an open source genome-graph-based pipeline for calculating the efficacy of genomic edits performed on multiple populations of cells.
@@ -143,7 +144,7 @@ After the graph's construction, the nodes are 'chopped' into segments smaller th
 
 The pipeline then maps reads from the edited populations to this graph using \textit{vg} \citep{garrison2018variation}, generating a GAF (Gene Annotation Format) file to represent the alignment.
 A Python script parses the alignment file to calculate the coverage of the homology arms relative to the reference homology arms.
-We output a coverage table (in TSV), displaying each intended edit sequence alongside the corresponding homology arm coverage and reference homology arm coverage, thus quantifying the efficacy of each edit.
+We output a coverage table (in TSV format), displaying each intended edit sequence alongside the corresponding homology arm coverage and reference homology arm coverage, thereby quantifying the efficacy of each edit.
 
 \textit{FantasticLamp} thus enables the simultaneous quantification of edit efficacy across multiple edited populations, serving as a valuable tool for both the testing of novel editing methods and the verification of current methods in experiments involving genomic edits.
 By aligning reads to a graph instead of employing linear alignment, \textit{FantasticLamp} circumvents reference bias and will allow for precise quantification of genome edit states even in the case of contexts where many simultaneous edits are applied in close proximity.
@@ -165,7 +166,7 @@ The initial development and testing of this pipeline were carried out using a da
 These experiments involved multiple alterations---insertions, deletions, and substitutions---on a population of \textit{Saccharomyces cerevisiae}.
 They were performed in distinct batches by Inscripta Inc. \citep{gander2021simultaneous}.
 
-Preliminary results demonstrated the pipeline's capacity to calculate the read coverage, which acted as a measure of the effectiveness of the implemented edits.
+We found that the pipeline captured expected edit states.
 However, due to unforeseen logistical constraints, further usage of this dataset was halted.
 Consequently, an artificial dataset was constructed for further testing and refinement.
 
@@ -216,10 +217,13 @@ We provide this as a standard test in our code repository.
 \textit{FantasticLamp} demonstrates using a variation graph to quantify complex genome edits.
 We consider this work as an example of how to apply unbiased edit quantification to editing experiments.
 However, much work is left to be done to use these approaches at scale.
-As an emerging field, commodity high-throughput genome editing is still rare and we lack accepted standards for experimental design, so our implementation's inputs and outputs are necessarily bespoke.
-While we demonstrate basic functionality of \textit{FantasticLamp} on artificial and singleplex data, it could be expanded to analyze multiplexed pooled data.
+%As an emerging field, commodity high-throughput genome editing is still rare and we lack accepted standards for experimental design, so our implementation's inputs and outputs are necessarily bespoke.
+As an emerging field, commodity high-throughput genome editing is still uncommon, and accepted standards for experimental design are lacking.
+Therefore, the inputs and outputs of our implementation are necessarily customized.
+
 This pipeline provides a starting point to avoid bias when quantifying edits that can be built upon as editing technologies advance.
-Potential improvements include handling more complex structural variants, incorporating multiplexed data, estimating off-target effects, optimizing runtime for large genomes, and interfacing for non-expert users.
+While we demonstrate basic functionality of \textit{FantasticLamp} on artificial and singleplex data, it could be expanded to analyze multiplexed pooled data.
+Other potential improvements include handling more complex structural variants, incorporating multiplexed data, estimating off-target effects, and optimizing runtime for large genomes.
 In summary, \textit{FantasticLamp} provides a basic demonstration of the principle of using a variation graph as a reference system to avoid bias when quantifying genomic edits.
 
 \begin{comment}
