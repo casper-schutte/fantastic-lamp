@@ -51,13 +51,13 @@
 
 \copyrightyear{2023} \pubyear{XXXX}
 
-\access{Advance Access Publication Date: Day Month Year}
-\appnotes{Genome Analysis}
+%\access{Advance Access Publication Date: Day Month Year}
+%\appnotes{Genome Analysis}
 
 \begin{document}
 \firstpage{1}
 
-\subtitle{Genome Analysis}
+%\subtitle{Genome Analysis}
 
 \title[FantasticLamp]{FantasticLamp: a genome graph based pipeline for calculating the efficacy of genomic edits}
 \author[Schutte \textit{et~al}.]{
@@ -163,7 +163,7 @@ A flow diagram detailing the steps and files used in the \textit{FantasticLamp} 
 
 The initial development and testing of this pipeline were carried out using a dataset containing sequencing reads from various experiments.
 These experiments involved multiple alterations---insertions, deletions, and substitutions---on a population of \textit{Saccharomyces cerevisiae}.
-They were performed in distinct batches by Inscripta Inc. \cite{gander2021simultaneous}.
+They were performed in distinct batches by Inscripta Inc. \citep{gander2021simultaneous}.
 
 Preliminary results demonstrated the pipeline's capacity to calculate the read coverage, which acted as a measure of the effectiveness of the implemented edits.
 However, due to unforeseen logistical constraints, further usage of this dataset was halted.
@@ -211,8 +211,18 @@ We provide this as a standard test in our code repository.
 	\label{fig:images}
 \end{figure}
 
+\section*{Discussion}
+\label{sec:discussion}
+\textit{FantasticLamp} demonstrates using a variation graph to quantify complex genome edits.
+We consider this work as an example of how to apply unbiased edit quantification to editing experiments.
+However, much work is left to be done to use these approaches at scale.
+As an emerging field, commodity high-throughput genome editing is still rare and we lack accepted standards for experimental design, so our implementation's inputs and outputs are necessarily bespoke.
+While we demonstrate basic functionality of \textit{FantasticLamp} on artificial and singleplex data, it could be expanded to analyze multiplexed pooled data.
+This pipeline provides a starting point to avoid bias when quantifying edits that can be built upon as editing technologies advance.
+Potential improvements include handling more complex structural variants, incorporating multiplexed data, estimating off-target effects, optimizing runtime for large genomes, and interfacing for non-expert users.
+In summary, \textit{FantasticLamp} provides a basic demonstration of the principle of using a variation graph as a reference system to avoid bias when quantifying genomic edits.
 
-
+\begin{comment}
 \section*{Discussion}
 \label{sec:discussion}
 As novel genome editing processes are developed in the near future, we posit that the need for software tools that can capture the complexity of the edits and the relationship between them will increase.
@@ -222,6 +232,8 @@ However, the basic format is generic to other editing experiments that users may
 Future users will have to edit the bash script `find\_coverage.sh' such that the correct columns containing the edit- and reference homology arms are extracted.
 While the pipeline was tested on artificial data and singleplex sequencing data, it is possible to perform analysis using pooled sequencing data, but data availability has limited our ability to thoroughly test this.
 In summary, \textit{FantasticLamp} provides a basic demonstration of the principle of using a variation graph as a reference system to avoid bias when quantifying genomic edits, and stands as a prototype for future work in this space.
+\end{comment}
+
 \section*{Acknowledgements}
 We are grateful to Inscripta Inc for providing the data from editing experiments that was used to create and test this pipeline. We thank Deanna Church for supporting our collaboration.
 

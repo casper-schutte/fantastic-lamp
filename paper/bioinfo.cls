@@ -395,7 +395,8 @@
 \def\@@title#1{\authormark{#1}\@@@title{#1}}
 \long\def\@@@title#1{\gdef\@title{#1}}
 \long\def\subtitle#1{\gdef\@subtitle{#1}}
-\subtitle{Genome analysis}
+%\subtitle{Genomes yeah}
+\subtitle{}
 
 \long\def\author{\@ifnextchar[{\short@uthor}{\@uthor}}
 \def\short@uthor[#1]{\authormark{#1}\@@author}
@@ -482,8 +483,8 @@
   \vspace*{\aboveskipchk}%
   \vspace{\dropfromtop}%
   \hbox to \textwidth{\raisebox{5pt}[0pt]{%
-  \parbox[b]{415pt}{\raggedleft{\helveticacnitalic\fontsize{8}{12}\selectfont {Bioinformatics}}\\[1pt]
-  {\helveticacn doi.10.1093/bioinformatics/xxxxxx}\\[1pt]
+  \parbox[b]{415pt}{\raggedleft{\helveticacnitalic\fontsize{8}{12}\selectfont {Science is cool}}\\[1pt]
+  {\helveticacn doi.is.cool/xxxx/xxxxxx}\\[1pt]
   {\ifx\@access\@empty
   \else
   {\helveticacn \@access}\fi}
