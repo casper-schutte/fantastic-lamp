@@ -161,13 +161,17 @@ A flow diagram detailing the steps and files used in the \textit{FantasticLamp} 
 %Unfortunately, logistical issues prevented continued use of this data set and an artificial test data set was constructed. This artificial data set was comprised of a tiny reference genome, an accompanying design library CSV file containing reference sequences from the genome and edited sequences, and artificial reads mapping to either the reference or the edit at a particular edit locus. 
 %The pipeline accurately calculated the edit coverage and thus provided a quantitative measure of edit efficacy.  
 
-The initial development and testing of this pipeline were carried out using a dataset containing sequencing reads from various experiments. These experiments involved multiple alterations - insertions, deletions, and substitutions - on a population of \textit{Saccharomyces cerevisiae}. They were performed in distinct batches by Inscripta Inc. (reference pending).
+The initial development and testing of this pipeline were carried out using a dataset containing sequencing reads from various experiments.
+These experiments involved multiple alterations---insertions, deletions, and substitutions---on a population of \textit{Saccharomyces cerevisiae}.
+They were performed in distinct batches by Inscripta Inc. \cite{gander2021simultaneous}.
 
 Preliminary results demonstrated the pipeline's capacity to calculate the read coverage, which acted as a measure of the effectiveness of the implemented edits.
-However, due to unforeseen logistical constraints, further usage of this dataset was halted. Consequently, an artificial dataset was constructed for further testing and refinement.
+However, due to unforeseen logistical constraints, further usage of this dataset was halted.
+Consequently, an artificial dataset was constructed for further testing and refinement.
 
-This synthetic dataset encompassed a small reference genome, a related design library CSV, which contained both the reference and edited sequences from the genome, and artificial reads mapping to either the reference or the edit at a specific edit locus. 
-Notably, the pipeline was successful in accurately calculating the edit coverage from this dataset, providing a quantitative evaluation of the edit's effectiveness.
+This synthetic dataset encompasses a small reference genome, a related design library CSV, which contain both the reference and edited sequences from the genome, and artificial reads mapping to either the reference or the edit at a specific edit locus. 
+\textit{FantasticLamp} accurately calculated the edit coverage from this dataset, providing a quantitative evaluation of the edit's effectiveness.
+We provide this as a standard test in our code repository.
 
 %\begin{figure}
 %	\centering
