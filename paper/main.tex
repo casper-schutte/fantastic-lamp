@@ -108,7 +108,8 @@ Source code and documentation are available at \url{https://github.com/casper-sc
 \label{sec:introduction}
 
 In the field of genome engineering, various methods such as CRISPR/Cas9, TALEN, and ZNF-based systems are employed to create genomic edits in cells for the study of gene functions and the creation of new cell lines \citep{gaj2013zfn}.
-Identifying and quantifying the success rate of these edits in large-scale data sets can be challenging, as unsuccessful edits may occur \citep{guell2014genome}, \citep{van2020delivery}.
+Identifying and quantifying the success rate of these edits in large-scale data sets can be challenging due to factors such as variations in editing efficiency, unintended off-target effects, and the complexity of accurately distinguishing between successfully edited and unedited sequences \citep{guell2014genome}, \citep{van2020delivery}.
+%Identifying and quantifying the success rate of these edits in large-scale data sets can be challenging ... \citep{guell2014genome}, \citep{van2020delivery}.
 
 Traditional approaches that attempt to enumerate all possible edit states as individual target sequences must confront an exponential number of edit combinations.
 This can increase complexity and introduce errors \citep{huang2013short}, \citep{mun2021leviosam}.
@@ -124,30 +125,11 @@ Our method involves mapping genomic edits onto structures representable in varia
 We subsequently align reads from a population of edited cells to this graph and quantify edit efficiency by comparing the observed edited and unedited allele states (Figure \ref{fig:images}D).
 This integrated approach ensures a more accurate quantification of edit efficacy across multiple populations of edited cells.
 
-\begin{comment}
-In the field of genome engineering, researchers often perform genomic edits in cells, such as CRISPR/Cas9, TALEN, and ZNF-based systems, to study gene functions and to create new cell lines \citep{gaj2013zfn}.
-However, these edits may not always be successful, and it may be challenging to identify and quantify the success rate of these edits in large-scale data sets \citep{guell2014genome}, \citep{van2020delivery}.
-%Because they need to enumerate an exponential number of combinations,
-Approaches that attempt to consider all possible edit states as individual target sequences must consider all combinations of edits, which increases complexity and can lead to errors \citep{huang2013short}, \citep{mun2021leviosam}.
-Additionally, when assessing the success rate of genomic edits, a linear alignment method may introduce reference bias, particularly when multiple nearby edits and edit state mixtures are present.
-
-Alternatively, a genome graph approach can provide a more complete and accurate perspective of sequence relationships, while avoiding reference bias and capturing all allele state mixtures present within the targeted edits, even in the case of overlapped edits \citep{eggertsson2017graphtyper,Martiniano_2020}.
-Compared to linear alignment methods, genome graphs can provide a more accurate and comprehensive view \citep{garrison2018variation} of the relationships between sequences \citep{paten2017genome} because reads can be mapped to a graph that captures a population of sequences and variation between them, instead of to a single reference.
-
-Given these advantages over linear methods, we suggest a pipeline based on genome graph alignment tools would be better suited for quantifying edit efficacy in multiple populations of edited cells.
-Here, we present \textit{FantasticLamp}, a simple pipeline that uses genome graph based sequence analysis to quantify edit efficacy in experiments where multiple edits were performed separately on the same population.
-
-Our approach maps genomic edits onto structures that we can represent in variation graphs (Figure \ref{fig:images}A-C).
-We then align reads drawn from a population of edited cells to this graph, and quantify edit efficiency by comparing our observations for edited and unedited alleles states.
-\end{comment}
-
 \section*{Implementation}
 \label{sec:implementation}
 Here we describe the steps and tools used in creating \textit{FantasticLamp}. 
 
-
-
-Given a reference genome and reads sequenced from multiple edited populations, the pipeline uses a design library CSV file, which contains the intended edits and reference sequences at the intended edit sites, to construct a genome graph.
+Given a reference genome and reads sequenced from multiple edited populations, the pipeline uses a design library file---a table which contains the intended edits and reference sequences at the intended edit sites---to construct a genome graph.
 
 The genome graph is made up of the reference genome, the intended edit sequences (`homology arms', or `edit homology arms'), and the reference sequences at the edit sites (`reference homology arms').
 The construction of the graph involves taking the homology arms and reference homology arms and mapping them to the reference genome using \textit{minimap2} \citep{li2018minimap2}.
