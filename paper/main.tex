@@ -104,34 +104,44 @@ Source code and documentation are available at \url{https://github.com/casper-sc
 \maketitle
 
 
-\section{Introduction}
+\section*{Introduction}
 \label{sec:introduction}
+
+In the field of genome engineering, various methods such as CRISPR/Cas9, TALEN, and ZNF-based systems are employed to create genomic edits in cells for the study of gene functions and the creation of new cell lines \citep{gaj2013zfn}.
+Identifying and quantifying the success rate of these edits in large-scale data sets can be challenging, as unsuccessful edits may occur \citep{guell2014genome}, \citep{van2020delivery}.
+
+Traditional approaches that attempt to enumerate all possible edit states as individual target sequences must confront an exponential number of edit combinations.
+This can increase complexity and introduce errors \citep{huang2013short}, \citep{mun2021leviosam}.
+Moreover, assessing the success rate of genomic edits through a linear alignment method may lead to reference bias, especially when there are multiple nearby edits and mixed edit states.
+
+An alternative to these linear methods is the use of a genome graph approach, which can offer a more comprehensive perspective on sequence relationships, avoiding reference bias, and capturing all allele state mixtures, even in cases of overlapping edits \citep{eggertsson2017graphtyper,Martiniano_2020}.
+Genome graphs provide a more accurate and complete view compared to linear alignment methods by allowing reads to be mapped to a graph that represents a population of sequences and the variations between them, rather than a single reference \citep{garrison2018variation,paten2017genome}.
+
+Given the aforementioned advantages of the genome graph approach, we propose \textit{FantasticLamp}, a pipeline tailored for quantifying edit efficacy in experiments involving multiple edits performed on the same population.
+This pipeline leverages genome graph-based sequence analysis, offering a more suited solution for this context.
+
+Our method involves mapping genomic edits onto structures representable in variation graphs (Figure \ref{fig:images}A-C).
+We subsequently align reads from a population of edited cells to this graph and quantify edit efficiency by comparing the observed edited and unedited allele states (Figure \ref{fig:images}D).
+This integrated approach ensures a more accurate quantification of edit efficacy across multiple populations of edited cells.
+
+\begin{comment}
 In the field of genome engineering, researchers often perform genomic edits in cells, such as CRISPR/Cas9, TALEN, and ZNF-based systems, to study gene functions and to create new cell lines \citep{gaj2013zfn}.
 However, these edits may not always be successful, and it may be challenging to identify and quantify the success rate of these edits in large-scale data sets \citep{guell2014genome}, \citep{van2020delivery}.
-Linear approaches that attempt to consider all possible edit states as individual sequences in order to accurately represent complexity can become overly complex themselves and prone to errors \citep{huang2013short}, \citep{mun2021leviosam}.
-Additionally, when assessing the success rate of genomic edits, a linear alignment method may introduce reference bias and overlook the complexity of edits, particularly when multiple nearby edits and edit state mixtures are present.
+%Because they need to enumerate an exponential number of combinations,
+Approaches that attempt to consider all possible edit states as individual target sequences must consider all combinations of edits, which increases complexity and can lead to errors \citep{huang2013short}, \citep{mun2021leviosam}.
+Additionally, when assessing the success rate of genomic edits, a linear alignment method may introduce reference bias, particularly when multiple nearby edits and edit state mixtures are present.
 
+Alternatively, a genome graph approach can provide a more complete and accurate perspective of sequence relationships, while avoiding reference bias and capturing all allele state mixtures present within the targeted edits, even in the case of overlapped edits \citep{eggertsson2017graphtyper,Martiniano_2020}.
+Compared to linear alignment methods, genome graphs can provide a more accurate and comprehensive view \citep{garrison2018variation} of the relationships between sequences \citep{paten2017genome} because reads can be mapped to a graph that captures a population of sequences and variation between them, instead of to a single reference.
 
-Alternatively, a genome graph approach can provide a more complete and accurate perspective of sequence relationships, while avoiding reference bias and capturing all allele state mixtures present within the targeted edits, even in the case of overlapped edits \citep{eggertsson2017graphtyper}.
+Given these advantages over linear methods, we suggest a pipeline based on genome graph alignment tools would be better suited for quantifying edit efficacy in multiple populations of edited cells.
+Here, we present \textit{FantasticLamp}, a simple pipeline that uses genome graph based sequence analysis to quantify edit efficacy in experiments where multiple edits were performed separately on the same population.
 
-Compared to linear alignment methods, genome graphs can provide a more accurate and comprehensive view \citep{garrison2018variation} of the relationships between sequences \citep{paten2017genome} because reads can be mapped to a graph that captures the variation between all the genomes/subsequences, instead of to a single reference, as seen in Figure \ref{fig:images} (A), (B), and (C).
-The cost of this increased accuracy and the ability to represent complexity is that using genome graphs is more computationally intensive than linear alignments methods \citep{rakocevic2019fast}.
+Our approach maps genomic edits onto structures that we can represent in variation graphs (Figure \ref{fig:images}A-C).
+We then align reads drawn from a population of edited cells to this graph, and quantify edit efficiency by comparing our observations for edited and unedited alleles states.
+\end{comment}
 
-Given these advantages over linear methods, we suggest a pipeline based on genome graph alignment tools would be more effective/better suited for quantifying edit efficacy in multiple populations of edited cells. 
-
-% To add:
-% Have I covered:
-% Enough backround info (what are we doing?)
-% Expanding on motivation (why are we doing this?) More detail on why graphs are better?
-% Briefly, how we did/will do this? 
-
-
-Here, we present \textit{FantasticLamp}, a simple pipeline that uses genome graph based sequence analysis to calculate/quantify edit efficacy in experiments where multiple edits were performed separately on the same population (wording?). 
-% wording? Detail?
-
-
-
-\section{Implementation}
+\section*{Implementation}
 \label{sec:implementation}
 Here we describe the steps and tools used in creating \textit{FantasticLamp}. 
 
@@ -162,7 +172,7 @@ A flow diagram of the steps and files used in the \textit{FantasticLamp} pipelin
 %We will discuss the tools used, not in extreme detail but enough to justify and explain their use.
 % Mention important functions or at least describe how coverage is calculted, etc. Mention problem of shared reads, plasmid integration, etc.
 
-\section{Results}
+\section*{Results}
 \label{sec:results}
 %This pipeline was initially tested and developed using a data set containing sequencing reads %(mention platform) from experiments where multiple edits (insertions, deletions, and substitutions) were performed on a population of \textit{Saccharomyces cerevisiae} (check this) by Inscripta Inc. (ref?). 
 %The initial/preliminary results showed/demonstrated/indicated the pipeline's ability to calculate read coverage (and thus efficacy) of the edits performed. 
@@ -217,7 +227,7 @@ Notably, the pipeline was successful in accurately calculating the edit coverage
 
 
 
-\section{Discussion}
+\section*{Discussion}
 \label{sec:discussion}
 As novel genome editing processes are developed in the near future, we posit that the need for software tools that can capture the complexity of the edits and the relationship between them will increase.
 We show a basic approach for quantifying complex genome editing results, which are difficult to reliably and simply evaluate using a single reference genome that may lead to biased estimates of edit states.
