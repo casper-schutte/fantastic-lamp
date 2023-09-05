@@ -9,7 +9,6 @@ generated include:
 2) Edit type - Substitution, Deletion, Insertion, (consider ability to create SNPs for future use)
 
 3) Start - Position in genome where edit sequence starts
-    - TODO: investigate the fields in the inscripta CSV (how much flanking sequence is included?)
 
 4) Stop -  Position in genome where edit sequence ends
 
