@@ -34,11 +34,11 @@ import random
 from Bio import SeqIO
 
 # Number of edits to generate (user-defined)
-num_edits = 5
+num_edits = 100
 
 # Input FASTA file (provide the actual path, eventually this will be a user-defined argument)
 # fasta_file = "/home/casper/PycharmProjects/fantastic-lamp/validation testing/reference genome/lambda_phage.fasta"
-fasta_file = "/home/casper/PycharmProjects/fantastic-lamp/validation testing/reference genome/tiny_test.fasta"
+fasta_file = "/home/casper/PycharmProjects/fantastic-lamp/validation testing/reference genome/lambda_phage.fasta"
 
 
 # Function to load the reference genome from a FASTA file
@@ -47,6 +47,7 @@ def load_reference_genome(fasta_file):
     This function loads the reference genome from a FASTA file and returns the sequence as a string, and its length.
     """
     for record in SeqIO.parse(fasta_file, "fasta"):
+        print(len(record.seq))
         return record.seq, len(record.seq)
 
 
@@ -56,6 +57,8 @@ edit_types = ["Substitution", "Deletion", "Insertion"]
 edit_weights = [1, 1, 1]  # These weights can be adjusted to change the frequency of each edit type
 
 bps = ["A", "T", "G", "C"]
+
+
 # base pairs for random edit creation, can be adjusted to include Ns or other characters for testing
 
 
@@ -97,23 +100,28 @@ def generate_insertion(start_pos, stop_pos, length):
 
 
 # Function to generate a random edit record
+def generate_edit(chromosome_length, start_pos):
+    """
+    This function generates a random edit record based on the edit parameters.
+    For testing, edits will be created 200bp apart.
+    """
 
-def generate_edit(chromosome_length):
-    edit_min = 10  # Minimum length of edit
-    edit_max = 20  # Maximum length of edit
+    edit_min = 20  # Minimum length of edit
+    edit_max = 25  # Maximum length of edit
     margin = 200  # This is how close to the start or end of the chromosome an edit can be. For obvious reasons,
     # the edit cannot be closer to the start or end of a chromosome than the length of the edit itself.
 
     edit = {
         "ID": "ID-XXXX",  # Sequential IDs are added in a function lower down.
         "Edit type": random.choices(edit_types, weights=edit_weights)[0],
-        "Start": random.randint(margin, chromosome_length - margin),
+        "Start": start_pos
     }
 
     # Generate a random length within a specific range
     edit_length = random.randint(edit_min, edit_max)  # Adjust the range as needed
     # Calculate the stop position based on the start and length
     edit["Stop"] = edit["Start"] + edit_length
+    start_pos += 200 + edit_length
     return edit
 
 
@@ -176,14 +184,17 @@ def generate_homology_arm_sequences(reference_sequence, edit_type, start_pos, st
                              str(reference_sequence[stop_pos: stop_pos + flank_length]))
 
     print(
-        f"Edit type: {edit_type}, homology_arm_ref: {len(homology_arm_ref)}, homology_arm_edit: {len(homology_arm_edit)}")
+        f"Edit type: {edit_type}, homology_arm_ref: {len(homology_arm_ref)}, "
+        f"homology_arm_edit: {len(homology_arm_edit)}, start: {start_pos}, stop: {stop_pos}")
     return homology_arm_ref, homology_arm_edit
 
 
 # Generate and store edit records
+
 edits = []
-for x in range(num_edits):
-    edit = generate_edit(chromosome_length)
+start_pos = 500
+for x in range(num_edits+1):
+    edit = generate_edit(chromosome_length, start_pos)
     start = edit["Start"]
     stop = edit["Stop"]
 
@@ -199,7 +210,7 @@ for x in range(num_edits):
     homology_arm_ref, homology_arm_edit = generate_homology_arm_sequences(reference_sequence, edit["Edit type"],
                                                                           start, stop, edit_sequence)
 
-    edit["ID"] = x + 1
+    edit["ID"] = x
     edit["Ref sequence"] = str(reference_sequence[start - 1: stop])  # Adjusted for 0-based indexing
     if edit["Edit type"] == "Deletion":
         edit["Edit sequence"] = ""
@@ -210,6 +221,7 @@ for x in range(num_edits):
     # edit["Edit length"] = len(edit_sequence)
     # for testing
     edits.append(edit)
+    start_pos = stop + 200
 
 # Write edits to a CSV file
 with open("genomic_edits.csv", "w", newline="") as csvfile:
@@ -221,3 +233,4 @@ with open("genomic_edits.csv", "w", newline="") as csvfile:
     writer.writeheader()
     for edit in edits:
         writer.writerow(edit)
+
