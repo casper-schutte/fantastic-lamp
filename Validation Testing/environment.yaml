@@ -1,0 +1,16 @@
+name: fantastic-lamp
+channels:
+  - conda-forge
+  - bioconda
+
+dependencies:
+  - vg
+  - odgi
+  - minimap2
+  - seqwish
+  - pandas
+  - pv
+  - libjemalloc
+  - pytest
+  - biopython
+
