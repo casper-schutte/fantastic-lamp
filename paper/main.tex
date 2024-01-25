@@ -172,6 +172,12 @@ This synthetic dataset encompasses a small reference genome, a related design li
 \textit{FantasticLamp} accurately calculated the edit coverage from this dataset, providing a quantitative evaluation of the edit's effectiveness.
 We provide this as a standard test in our code repository.
 
+For further validation, we created a much larger validation test by taking a full yeast genome \citep{ncbis288c2023} and introducing a single edit (ranging from 20 - 25bp) at a specific locus, which we then simulated reads from.
+We created 100 of these edited genomes, each with a different edit at a random locus, and simulated 10x coverage, paired-end reads from each genome.
+We then ran \textit{FantasticLamp} on two sets of these simulated reads; one set with a base error rate of 0.5\%, and one with a base error rate of 1\%.
+In both of these validation tests, \textit{FantasticLamp} was able to identify the correct edit state for 97 out of 100 edits.
+The scripts used to generate these genomes and reads (as well as to perform the actual validation tests) are available in the code repository.
+
 %\begin{figure}
 %	\centering
 %	\fbox{\includegraphics[width=\columnwidth]{flow.pdf}}
@@ -215,14 +221,16 @@ We provide this as a standard test in our code repository.
 \textit{FantasticLamp} demonstrates using a variation graph to quantify complex genome edits.
 We consider this work as an example of how to apply unbiased edit quantification to editing experiments.
 However, much work is left to be done to use these approaches at scale.
-%As an emerging field, commodity high-throughput genome editing is still rare and we lack accepted standards for experimental design, so our implementation's inputs and outputs are necessarily bespoke.
+
 As an emerging field, commodity high-throughput genome editing is still uncommon, and accepted standards for experimental design are lacking.
 Therefore, the inputs and outputs of our implementation are necessarily customized.
 
 This pipeline provides a starting point to avoid bias when quantifying edits that can be built upon as editing technologies advance.
-While we demonstrate basic functionality of \textit{FantasticLamp} on artificial and singleplex data, it could be expanded to analyze multiplexed pooled data.
+In this paper, we demonstrate basic functionality of \textit{FantasticLamp} on artificial and singleplex data. 
+Using a large validation test, we confirmed the robustness and accuracy of the approaches outlined in this paper.
+Moreover, the potential of \textit{FantasticLamp} extends beyond singleplex data, as it could be further developed to analyze multiplexed pooled data.
 Other potential improvements include handling more complex structural variants, incorporating multiplexed data, estimating off-target effects, and optimizing runtime for large genomes.
-In summary, \textit{FantasticLamp} provides a basic demonstration of the principle of using a variation graph as a reference system to avoid bias when quantifying genomic edits.
+In summary, \textit{FantasticLamp} provides a basic demonstration of the principle of using a variation graph as a reference system to avoid bias when accurately quantifying genomic edits.
 
 \begin{comment}
 \section*{Discussion}
