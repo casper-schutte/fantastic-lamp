@@ -1,4 +1,4 @@
-Unzip all of the files
+Large Validation Test:
 
 Install the fantastic-lamp conda environment
 
