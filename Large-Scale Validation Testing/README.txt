@@ -10,3 +10,4 @@ OR
 
 conda run -n fantastic-lamp bash validation_test.sh
 
+The parameters of the tests can be changed within the validation_test.sh script.

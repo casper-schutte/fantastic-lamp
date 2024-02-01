@@ -4,7 +4,7 @@ export LD_PRELOAD=/lib/x86_64-linux-gnu/libjemalloc.so.2
 # This script will be used to run the test in one go, tying together all the other scripts.
 
 # Number of edits:
-num_edits=101
+num_edits=11
 genome_name="GCA_000146045.2_R64_genomic.fna"
 # Create edits:
 function create_edits() {
@@ -83,74 +83,74 @@ create_edits
 
 # Varying coverage (number of reads) with 0.00 error rate:
 # 1x coverage:
-create_reads 0.00 30000
-zip_reads
-create_edit_graph $genome_name
-collect_results 1xN30K $num_edits
-rm *.gz *.gaf
-
-# 2x coverage:
-create_reads 0.00 60000
-zip_reads
-create_edit_graph $genome_name
-collect_results 2xN60K $num_edits
-rm *.gz *.gaf
-
-# 3x coverage:
-create_reads 0.00 90000
-zip_reads
-create_edit_graph $genome_name
-collect_results 3xN90K $num_edits
-rm *.gz *.gaf
-
-# 4x coverage:
-create_reads 0.00 120000
-zip_reads
-create_edit_graph $genome_name
-collect_results 4xN120K $num_edits
-rm *.gz *.gaf
-
-# 5x coverage:
-create_reads 0.00 150000
-zip_reads
-create_edit_graph $genome_name
-collect_results 5xN150K $num_edits
-rm *.gz *.gaf
-
-# 6x coverage:
-create_reads 0.00 180000
-zip_reads
-create_edit_graph $genome_name
-collect_results 6xN180K $num_edits
-rm *.gz *.gaf
-
-# 7x coverage:
-create_reads 0.00 210000
-zip_reads
-create_edit_graph $genome_name
-collect_results 7xN210K $num_edits
-rm *.gz *.gaf
-
-# 8x coverage:
-create_reads 0.00 240000
-zip_reads
-create_edit_graph $genome_name
-collect_results 8xN240K $num_edits
-rm *.gz *.gaf
-
-# 9x coverage:
-create_reads 0.00 270000
-zip_reads
-create_edit_graph $genome_name
-collect_results 9xN270K $num_edits
-rm *.gz *.gaf
+#create_reads 0.00 30000
+#zip_reads
+#create_edit_graph $genome_name
+#collect_results 1xN30K $num_edits
+#rm *.gz *.gaf
+#
+## 2x coverage:
+#create_reads 0.00 60000
+#zip_reads
+#create_edit_graph $genome_name
+#collect_results 2xN60K $num_edits
+#rm *.gz *.gaf
+#
+## 3x coverage:
+#create_reads 0.00 90000
+#zip_reads
+#create_edit_graph $genome_name
+#collect_results 3xN90K $num_edits
+#rm *.gz *.gaf
+#
+## 4x coverage:
+#create_reads 0.00 120000
+#zip_reads
+#create_edit_graph $genome_name
+#collect_results 4xN120K $num_edits
+#rm *.gz *.gaf
+#
+## 5x coverage:
+#create_reads 0.00 150000
+#zip_reads
+#create_edit_graph $genome_name
+#collect_results 5xN150K $num_edits
+#rm *.gz *.gaf
+#
+## 6x coverage:
+#create_reads 0.00 180000
+#zip_reads
+#create_edit_graph $genome_name
+#collect_results 6xN180K $num_edits
+#rm *.gz *.gaf
+#
+## 7x coverage:
+#create_reads 0.00 210000
+#zip_reads
+#create_edit_graph $genome_name
+#collect_results 7xN210K $num_edits
+#rm *.gz *.gaf
+#
+## 8x coverage:
+#create_reads 0.00 240000
+#zip_reads
+#create_edit_graph $genome_name
+#collect_results 8xN240K $num_edits
+#rm *.gz *.gaf
+#
+## 9x coverage:
+#create_reads 0.00 270000
+#zip_reads
+#create_edit_graph $genome_name
+#collect_results 9xN270K $num_edits
+#rm *.gz *.gaf
 ##
 ### 10x coverage:
-create_reads 0.00 300000
-zip_reads
-create_edit_graph $genome_name
-collect_results 10xN300K $num_edits
-rm *.gz *.gaf
+#create_reads 0.00 300000
+#zip_reads
+#create_edit_graph $genome_name
+#collect_results 10xN300K $num_edits
+#rm *.gz *.gaf
 
 # Varying base error rate (with 10x coverage):
 # 0.000
@@ -159,50 +159,50 @@ zip_reads
 create_edit_graph $genome_name
 collect_results e000 $num_edits
 rm *.gz *.gaf
+##
+##0.001
+#create_reads 0.001 300000
+#zip_reads
+#create_edit_graph $genome_name
+#collect_results e001 $num_edits
+#rm *.gz *.gaf
 #
-#0.001
-create_reads 0.001 300000
-zip_reads
-create_edit_graph $genome_name
-collect_results e001 $num_edits
-rm *.gz *.gaf
+##0.005
+#create_reads 0.005 300000
+#zip_reads
+#create_edit_graph $genome_name
+#collect_results e005 $num_edits
+#rm *.gz *.gaf
+#
+##0.01
+#create_reads 0.01 300000
+#zip_reads
+#create_edit_graph $genome_name
+#collect_results e01 $num_edits
+#rm *.gz *.gaf
+#
+##0.02
+#create_reads 0.02 300000
+#zip_reads
+#create_edit_graph $genome_name
+#collect_results e02 $num_edits
+#rm *.gz *.gaf
+#
+##0.05
+#create_reads 0.05 300000
+#zip_reads
+#create_edit_graph $genome_name
+#collect_results e05 $num_edits
+#rm *.gz *.gaf
+#
+##0.1
+#create_reads 0.1 300000
+#zip_reads
+#create_edit_graph $genome_name
+#collect_results e1 $num_edits
+#rm *.gz *.gaf
 
-#0.005
-create_reads 0.005 300000
-zip_reads
-create_edit_graph $genome_name
-collect_results e005 $num_edits
-rm *.gz *.gaf
-
-#0.01
-create_reads 0.01 300000
-zip_reads
-create_edit_graph $genome_name
-collect_results e01 $num_edits
-rm *.gz *.gaf
-
-#0.02
-create_reads 0.02 300000
-zip_reads
-create_edit_graph $genome_name
-collect_results e02 $num_edits
-rm *.gz *.gaf
-
-#0.05
-create_reads 0.05 300000
-zip_reads
-create_edit_graph $genome_name
-collect_results e05 $num_edits
-rm *.gz *.gaf
-
-#0.1
-create_reads 0.1 300000
-zip_reads
-create_edit_graph $genome_name
-collect_results e1 $num_edits
-rm *.gz *.gaf
-
-summarize_coverage_results
+#summarize_coverage_results
 summarize_error_results
 
 echo "Done!"
