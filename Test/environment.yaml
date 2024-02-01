@@ -5,7 +5,7 @@ channels:
 
 dependencies:
   - vg
-  - odgi==0.8.2
+  - odgi
   - minimap2
   - seqwish
   - pandas
