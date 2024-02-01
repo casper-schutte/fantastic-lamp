@@ -59,7 +59,7 @@
 
 %\subtitle{Genome Analysis}
 
-\title[FantasticLamp]{FantasticLamp: a genome graph based pipeline for calculating the efficacy of genomic edits}
+\title[FantasticLamp]{FantasticLamp: quantifying genomic edits with genome variation graphs}
 \author[Schutte \textit{et~al}.]{
 
 Casper~Schutte\,$^{\orcidlink{0000-0003-4245-6842}\text{\sfb 1}}$,
@@ -117,7 +117,7 @@ This can increase complexity and introduce errors \citep{huang2013short}, \citep
 Moreover, assessing the success rate of genomic edits through a linear alignment method may lead to reference bias, especially when there are multiple nearby edits and mixed edit states.
 
 An alternative to these linear methods is the use of a genome graph approach, which can offer a more comprehensive perspective on sequence relationships, avoiding reference bias, and capturing all allele state mixtures, even in cases of overlapping edits \citep{eggertsson2017graphtyper,Martiniano_2020}.
-Genome graphs provide a more accurate and complete view compared to linear alignment methods by allowing reads to be mapped to a graph that represents a population of sequences and the variations between them, rather than a single reference \citep{garrison2018variation,paten2017genome}.
+Genome graphs provide a more accurate and complete view compared to linear alignment methods by allowing reads to be mapped to a graph that represents a population of sequences and the variations between them, rather than a single reference \citep{garrison2018variation,paten2017genome,Eizenga_2020}.
 
 Given the aforementioned advantages of the genome graph approach, we propose \textit{FantasticLamp}, a pipeline tailored for quantifying edit efficacy in experiments involving multiple edits performed on the same population.
 This pipeline leverages genome graph-based sequence analysis, offering a more suited solution for this context.
@@ -132,8 +132,8 @@ Here we describe the steps and tools utilized in creating \textit{FantasticLamp}
 
 Given a reference genome and reads sequenced from multiple edited populations, the pipeline employs a design library file---a table containing the intended edits and reference sequences at the intended edit sites---to construct a genome graph.
 
-The genome graph consists of the reference genome, the intended edit sequences (referred to as `homology arms' or `edit homology arms'), and the reference sequences at the edit sites (termed `reference homology arms').
-The core structure of the graph is an alignment of homology and reference homology arms onto the reference genome, which we complet using \textit{minimap2} \citep{li2018minimap2}.
+The genome graph consists of the reference genome, the intended edit sequences (referred to as ``homology arms'' or ``edit homology arms''), and the reference sequences at the edit sites (termed ``reference homology arms'').
+The core structure of the graph is an alignment of homology and reference homology arms onto the reference genome, which we complete using \textit{minimap2} \citep{li2018minimap2}.
 The inclusion of the reference homology arms enables the pipeline to calculate the relative coverage, thereby determining the edit efficiency by comparing the coverage of edit homology arms to that of the reference homology arms.
 
 Then, we construct the graph itself.
@@ -172,7 +172,7 @@ This synthetic dataset encompasses a small reference genome, a related design li
 \textit{FantasticLamp} accurately calculated the edit coverage from this dataset, providing a quantitative evaluation of the edit's effectiveness.
 We provide this as a standard test in our code repository.
 
-For further validation, we created a much larger validation test by taking a full yeast genome \citep{ncbis288c2023} and introducing a single edit (ranging from 20 - 25bp) at a specific locus, which we then simulated reads from.
+For further validation, we created a much larger validation test by taking a full yeast genome (GCF\_000146045.2) and introducing a single edit (ranging from 20 - 25bp) at a specific locus, which we then simulated reads from.
 We created 100 of these edited genomes, each with a different edit at a random locus, and simulated 10x coverage, paired-end reads from each genome.
 We then ran \textit{FantasticLamp} on two sets of these simulated reads; one set with a base error rate of 0.5\%, and one with a base error rate of 1\%.
 In both of these validation tests, \textit{FantasticLamp} was able to identify the correct edit state for 97 out of 100 edits.
