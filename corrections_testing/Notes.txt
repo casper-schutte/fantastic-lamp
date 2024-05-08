@@ -1,0 +1,9 @@
+In this directory, I will test changes to the script that were suggested by reviewers of the paper.
+Tests will be completed using the same small data set used in the automated tests that ensure the pipeline remains
+functional.
+
+First, the pipeline needs arguments instead of variables that point to files. The first question is whether
+to throw an error when an argument is not supplied, or to go with the default (the pre-change defaults).
+
+I think the best way to do this is to have certain necessary arguments such as file paths, and some default settings
+that can be changed by the user. 

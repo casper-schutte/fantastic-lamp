@@ -16,21 +16,17 @@ Ubuntu 20.04 with Python 3.10, although earlier versions of Python may also be c
 the system configuration that has been confirmed to run this pipeline correctly, please refer to the "Test.yml" file in
 the /workflows directory. 
 
-## Verification and testing:
+## Verification and testing (for testing only):
 The following files from the /Test folder are strictly necessary:
-- DesignLibraryDetails_ODD126.withEditWindow.csv
-- Data_names.txt
+- genomic_edits.csv
 - environment.yaml
-- ref_and_mt.fna 
+- reference.fna 
 - simple_test.fastq.gz
 
 Copy the following scripts from the main page into the data folder:
 - find_coverage.sh
 - compare_coverage_read_info.py
 
-ODD126_augmented_CB39.fasta is not strictly necessary, but there will be an error message 
-if the pipeline does not find it. However, the pipeline will still run correctly, as this test 
-does not include reads from a vector plasmid sequence.
 
 The pipeline needs to be run with Conda
 Install deps:
@@ -47,6 +43,10 @@ Run pipeline: (Use this exact command)
 conda run -n fantastic-lamp bash find_coverage.sh
 
 ```
+
+## Usage:
+TODO: This 
+
 ## Descriptions of steps and files used by the pipeline:
 
 1) Homology arms (hom_arms) and the reference sequence for each homology arm (ref_hom_arms)
@@ -71,6 +71,13 @@ hom_arms and ref_hom_arms are counted (from the .gaf file) and put into a dictio
 edge. Coverage for a path calculated as the sum of the number of reads mapping to an edge in the path divided by 
 the number of edges in the path. These coverages are written to a .tsv file.
 
+## Implementation Note:
+If you are working with a plasmid vector (for example, you used a plasmid vector to edit a genome) or need to add some sequence to the reference, use “cat” to combine the 
+FASTA files and use the resulting file as the reference genome.
+eg:
+```
+cat reference_sequence.fna plasmid_sequence.fna > reference.fna   
+```
 ## Compiling the paper:
 - Download the /paper/ folder. 
 - In the folder, run:

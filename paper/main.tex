@@ -175,7 +175,7 @@ We provide this as a standard test in our code repository.
 For further validation, we created a much larger validation test by taking a full yeast genome \citep{ncbis288c2023} and introducing a single edit (ranging from 20 - 25bp) at a specific locus, which we then simulated reads from.
 We created 100 of these edited genomes, each with a different edit at a random locus, and simulated 10x coverage, paired-end reads from each genome.
 We then ran \textit{FantasticLamp} on two sets of these simulated reads; one set with a base error rate of 0.5\%, and one with a base error rate of 1\%.
-In both of these validation tests, \textit{FantasticLamp} was able to identify the correct edit state for 97 out of 100 edits.
+In both of these validation tests, \textit{FantasticLamp} was able to identify the correct edit state for 97 out of 100 edits. For these tests, we defined ``correct edit state'' as a fractional edit coverage of at least 0.5. This fractional coverage was calculated by taking edit coverage and dividing it by the total coverage for both the edit and reference paths, producing a value between 0 and 1. 
 The scripts used to generate these genomes and reads (as well as to perform the actual validation tests) are available in the code repository.
 
 %\begin{figure}
@@ -212,7 +212,7 @@ The scripts used to generate these genomes and reads (as well as to perform the 
 		%\caption{Test caption for flow diagram}
 		\label{fig:flow}
 	\end{minipage}
-	\caption{(A) Graph representation of a substitution. Edit path shown in green. (B) Graph representation of an insertion. Edit path shown in light blue. (C) Graph representation of a deletion. Edit path shown in dark blue. (D) Diagram depicting the steps, software tools, and file formats use in the \textit{FantasticLamp} pipeline.}
+	\caption{(A) Graph representation of a substitution. Edit path shown in green. (B) Graph representation of an insertion. Edit path shown in light blue. (C) Graph representation of a deletion. Edit path shown in dark blue. (A, B, and C) Coverage is displayed on nodes in the edit paths. (D) Diagram depicting the steps, software tools, and file formats use in the \textit{FantasticLamp} pipeline.}
 	\label{fig:images}
 \end{figure}
 

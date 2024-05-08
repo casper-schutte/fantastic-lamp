@@ -5,13 +5,18 @@
 env LD_PRELOAD=libjemalloc.so.2 PYTHONPATH=lib python3 -c 'import odgi'
 export LD_PRELOAD=/lib/x86_64-linux-gnu/libjemalloc.so.2
 
-cat genomic_edits.csv | awk -F',' '{print ">homology_arm_"$1; print $8;}' | tr -d '\r' > homology_arms.fa
-cat genomic_edits.csv | awk -F',' '{print ">ref_homology_arm_"$1; print $7;}' | tr -d '\r' > ref_subpaths.fa
+#cat genomic_edits.csv | awk -F',' '{print ">homology_arm_"$1; print $8;}' | tr -d '\r' > homology_arms.fa
+#cat genomic_edits.csv | awk -F',' '{print ">ref_homology_arm_"$1; print $7;}' | tr -d '\r' > ref_subpaths.fa
+
+cat genomic_edits.csv | awk -F',' '{print ">homology_arm_"$1; print $9;}' | tr -d '\r' > homology_arms.fa
+cat genomic_edits.csv | awk -F',' '{print ">ref_homology_arm_"$1; print $8;}' | tr -d '\r' > ref_subpaths.fa
 
 # Combine homology arms and reference over the range of the homology arms into one FASTA file.
 cat ref_subpaths.fa homology_arms.fa > ref_and_hom_arms.fa
 
-ref=lambda_phage.fasta
+#ref=GCA_000146045.2_R64_genomic.fna
+ref=lv_mc.fa
+#ref=lambda_phage.fasta
 
 # map the homology arms against the reference
 minimap2 -k 19 -w 1 -cx sr $ref ref_and_hom_arms.fa >ref_and_hom_arms.paf

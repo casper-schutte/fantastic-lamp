@@ -34,7 +34,7 @@ import random
 from Bio import SeqIO
 
 # Number of edits to generate (user-defined)
-num_edits = 100
+num_edits = 1
 
 # Input FASTA file (provide the actual path, eventually this will be a user-defined argument)
 # fasta_file = "/home/casper/PycharmProjects/fantastic-lamp/validation testing/reference genome/lambda_phage.fasta"
