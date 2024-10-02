@@ -484,14 +484,6 @@
   \vspace{\dropfromtop}%
   \hbox to \textwidth{\raisebox{5pt}[0pt]{%
   \parbox[b]{415pt}{\raggedleft{\helveticacnitalic\fontsize{8}{12}\selectfont {Science is cool}}\\[1pt]
-  {\helveticacn doi.is.cool/xxxx/xxxxxx}\\[1pt]
-  {\ifx\@access\@empty
-  \else
-  {\helveticacn \@access}\fi}
-  \vskip1pt
-  {\ifx\@appnotes\@empty
-  \else
-  {\helveticacn \@appnotes}\fi}
     }}%
 %\enskip  \parbox[b]{11.3pc}{%
 %    \helvetica
@@ -519,10 +511,6 @@
     \vspace{6\p@}
     {\helveticacn\fontsize{8.5}{12}\selectfont\raggedright \@corresp \par}%
     \vspace{2\p@}
-    {\helvetica\fontsize{8.5}{12}\selectfont\raggedright \@editor \par}
-    \vspace{4\p@}
-    {\helvetica\fontsize{7}{12}\selectfont\raggedright \@history \par}
-    \vspace{14\p@}
     {
   \let\section\absection  
   {\helvetica\fontsize{10}{12}\bfseries\selectfont Abstract}\par}
